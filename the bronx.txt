@@ -1,0 +1,3356 @@
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jaza141/WQAREGYTUIO0P/refs/heads/main/OBSIDIAN%20RED%20VER%20ITS%20LIKE%20NOT%20OBSIDIAN%20ANYMORE"))()
+local Window = Library:CreateWindow({
+    Title = "64th.lol",
+    Footer = "discord.gg/64thlol | infinite Money + Gun Mods and much much more! | Best paid ($4) TB3 Script!",
+    ToggleKeybind = Enum.KeyCode.RightControl,
+    Center = true,
+    AutoShow = true,
+    Icon = 112710453831516,
+    NotifySide = "Left"
+})
+
+local WelcomeTab = Window:AddTab("Welcome", "house") 
+local LocalPlayerTab = Window:AddTab("Local Player", "person-standing") 
+local TeleportsTab = Window:AddTab("Teleports", "map-pin-plus") 
+local AutofarmsTab = Window:AddTab("Autofarms", "refresh-cw") 
+local ShopTab = Window:AddTab("Quick Shop", "shopping-cart") 
+local TrollTab = Window:AddTab("Troll/Mods", "flask-conical") 
+local TargetTab = Window:AddTab("Target", "crosshair") 
+local VisualTab = Window:AddTab("Visual", "person-standing") 
+local OtherTab = Window:AddTab("Other", "shuffle") 
+
+ 
+local LeftGroupbox = WelcomeTab:AddLeftGroupbox("Welcome", "hand")
+
+local player = game.Players.LocalPlayer
+local displayName = player.DisplayName
+
+local Label = LeftGroupbox:AddLabel("Welcome @" .. displayName)
+local WrappedLabel = LeftGroupbox:AddLabel({
+    Text = "Thank u for choosing to use 64th.lol",
+    DoesWrap = true
+})
+
+local executorName = "Unknown Executor"
+
+if type(identifyexecutor) == "function" then
+    executorName = identifyexecutor()
+end
+
+local Label = LeftGroupbox:AddLabel("Game Name: " .. game.Name)
+local WrappedLabel = LeftGroupbox:AddLabel({
+    Text = "Executor: " .. executorName,
+    DoesWrap = true
+})
+
+local RightGroupbox = WelcomeTab:AddRightGroupbox("Update Log", "info")
+
+local Label = RightGroupbox:AddLabel("Tha Bronx 3 Update Log") 
+local WrappedLabel = RightGroupbox:AddLabel({
+    Text = "Fixed UI Interface\nNew infinite money and teleport system\nAdded more fetures at Local Player Tab\nPaid", 
+    DoesWrap = true
+})
+
+local LeftGroupbox = WelcomeTab:AddLeftGroupbox("Key Info", "info")
+local Label = LeftGroupbox:AddLabel("Key Info") 
+local WrappedLabel = LeftGroupbox:AddLabel({
+    Text = "Ad-Key Expires in 24H.", 
+    DoesWrap = true
+})
+
+ local RightGroupbox = WelcomeTab:AddRightGroupbox("Community", "info")
+
+local Button = RightGroupbox:AddButton({
+    Text = "Copy Discord Link",
+    Func = function()
+
+        -- Show black screen overlay with countdown timer
+        pcall(function()
+            showBlackScreen()
+            local player = game:GetService("Players").LocalPlayer
+            local gui = player:WaitForChild("PlayerGui"):FindFirstChild("BlackoutOverlay")
+            if gui then
+                local label = gui:FindFirstChildWhichIsA("TextLabel")
+                if label then
+                    -- initialize timer
+                    local totalSeconds = 240 -- 4 minutes
+                    task.spawn(function()
+                        while totalSeconds >= 0 and gui.Parent do
+                            local minutes = math.floor(totalSeconds / 60)
+                            local seconds = totalSeconds % 60
+                            local formatted = string.format("%d:%02d", minutes, seconds)
+                            label.Text = "🎃 64th.lol — Generating Money (" .. formatted .. " remaining)!"
+                            task.wait(1)
+                            totalSeconds -= 1
+                        end
+                        -- auto remove after 4 minutes
+                        pcall(removeBlackScreen)
+                    end)
+                end
+            end
+        end)
+        setclipboard("https://discord.gg/64thlol")
+        print("Discord link copied to clipboard!")
+    end,
+    DoubleClick = false  
+})
+
+ 
+local Tabbox = LocalPlayerTab:AddLeftTabbox("Settings")
+local Tab1 = Tabbox:AddTab("Local Player")
+local Tab2 = Tabbox:AddTab("Misc")
+
+ 
+
+local function notifyToggle(name, enabled)
+    Library:Notify({
+        Title = "Success",
+        Description = name .. (enabled and " enabled" or " disabled"),
+        Time = 5,
+        SoundId = 123456789
+    })
+end
+
+ 
+local AntiFallDamageToggle = Tab1:AddToggle("AntiFallDamage", {
+    Text = "Anti Fall Damage",
+    Default = false,
+    Tooltip = "Prevents fall damage by destroying FallDamageRagdoll",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:FindFirstChild("Humanoid")
+        local fallDamage = character:FindFirstChild("FallDamageRagdoll")
+
+        if humanoid and fallDamage then
+            if Value then
+                fallDamage:Destroy()
+            else
+                print("Fall damage enabled.")
+             end
+        end
+        notifyToggle("Anti Fall Damage", Value)
+    end
+})
+
+local AntiJumpCooldownToggle = Tab1:AddToggle("AntiJumpCooldown", {
+    Text = "Anti Jump Cooldown",
+    Default = false,
+    Tooltip = "Disables the jump cooldown",
+    Callback = function(Value)
+        local localPlayer = game:GetService("Players").LocalPlayer
+        local jumpDebounce = localPlayer.PlayerGui:FindFirstChild("JumpDebounce")
+        local localScript = jumpDebounce and jumpDebounce:FindFirstChild("LocalScript")
+
+        if localScript then
+            localScript.Enabled = not Value
+        end
+        notifyToggle("Anti Jump Cooldown", Value)
+    end
+})
+
+local InfiniteSleepToggle = Tab1:AddToggle("InfiniteSleep", {
+    Text = "Infinite Sleep",
+    Default = false,
+    Tooltip = "Toggle infinite sleep",
+    Callback = function(Value)
+        local player = game:GetService("Players").LocalPlayer
+        local sleepGui = player.PlayerGui:FindFirstChild("SleepGui")
+        local sleepScript = nil
+
+        if sleepGui and sleepGui:FindFirstChild("Frame") then
+            local frame = sleepGui.Frame
+            if frame:FindFirstChild("sleep") then
+                local sleepFolder = frame.sleep
+                if sleepFolder:FindFirstChild("SleepBar") then
+                    local sleepBar = sleepFolder.SleepBar
+                    sleepScript = sleepBar:FindFirstChild("sleepScript")
+                end
+            end
+        end
+
+        if sleepScript then
+            sleepScript.Enabled = not Value  
+        else
+            warn("sleepScript not found!")
+        end
+
+        notifyToggle("Infinite Sleep", Value)
+    end
+})
+
+local InfiniteHungerToggle = Tab1:AddToggle("InfiniteHunger", {
+    Text = "Infinite Hunger",
+    Default = false,
+    Tooltip = "Toggle infinite hunger",
+    Callback = function(Value)
+        local player = game:GetService("Players").LocalPlayer
+        local hungerGui = player.PlayerGui:FindFirstChild("Hunger")
+        local hungerScript = nil
+
+        if hungerGui and hungerGui:FindFirstChild("Frame") then
+            local frame1 = hungerGui.Frame
+            if frame1:FindFirstChild("Frame") then
+                local frame2 = frame1.Frame
+                if frame2:FindFirstChild("Frame") then
+                    local frame3 = frame2.Frame
+                    hungerScript = frame3:FindFirstChild("HungerBarScript")
+                end
+            end
+        end
+
+        if hungerScript then
+            hungerScript.Enabled = not Value  
+        else
+            warn("HungerBarScript not found!")
+        end
+
+        notifyToggle("Infinite Hunger", Value)
+    end
+})
+
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local InfiniteStaminaToggle = Tab1:AddToggle("InfiniteStamina", {
+    Text = "Infinite Stamina",
+    Default = false,
+    Tooltip = "Toggle infinite stamina",
+    Callback = function(Value)
+        local runGui = LocalPlayer.PlayerGui:FindFirstChild("Run")
+        if runGui then
+            local staminaScript = runGui:FindFirstChild("Frame")
+                                and runGui.Frame:FindFirstChild("Frame")
+                                and runGui.Frame.Frame:FindFirstChild("Frame")
+                                and runGui.Frame.Frame.Frame:FindFirstChild("StaminaBarScript")
+            if staminaScript then
+                staminaScript.Enabled = not Value  
+            else
+                warn("StaminaBarScript not found")
+            end
+        else
+            warn("Run GUI not found!")
+        end
+
+        notifyToggle("Infinite Stamina", Value)
+    end
+})
+
+
+local NoRentPayToggle = Tab1:AddToggle("NoRentPay", {
+    Text = "No Rent Pay",
+    Default = false,
+    Tooltip = "Toggle no rent payment",
+    Callback = function(Value)
+        local rentGui = game:GetService("StarterGui"):FindFirstChild("RentGui")
+        if rentGui then
+            local rentScript = rentGui:FindFirstChild("LocalScript")
+            if rentScript then
+                rentScript.Enabled = not Value
+            end
+        end
+        notifyToggle("No Rent Pay", Value)
+    end
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local promptConnections = {}
+
+local function setupPrompt(prompt, enableInstant)
+    if promptConnections[prompt] then
+        promptConnections[prompt]:Disconnect()
+        promptConnections[prompt] = nil
+    end
+
+    if enableInstant then
+         
+        local originalHold = prompt.HoldDuration
+        local originalLOS = prompt.RequiresLineOfSight
+
+         
+        prompt.HoldDuration = 0
+        prompt.RequiresLineOfSight = false
+
+         
+
+         
+        promptConnections[prompt] = true
+    else
+         
+        prompt.HoldDuration = 1
+        prompt.RequiresLineOfSight = true
+    end
+end
+
+local InstantInteractionToggle = Tab1:AddToggle("InstantInteraction", {
+    Text = "Instant Interaction",
+    Default = false,
+    Tooltip = "Makes ProximityPrompts instant and disables line of sight",
+    Callback = function(Value)
+         
+        for prompt, conn in pairs(promptConnections) do
+            if typeof(conn) == "RBXScriptConnection" then
+                conn:Disconnect()
+            end
+            promptConnections[prompt] = nil
+        end
+
+         
+        for _, prompt in pairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") then
+                setupPrompt(prompt, Value)
+            end
+        end
+
+         
+        if Value then
+            promptConnections["AddedConnection"] = workspace.DescendantAdded:Connect(function(desc)
+                if desc:IsA("ProximityPrompt") then
+                    setupPrompt(desc, true)
+                end
+            end)
+        else
+            if promptConnections["AddedConnection"] then
+                promptConnections["AddedConnection"]:Disconnect()
+                promptConnections["AddedConnection"] = nil
+            end
+        end
+
+        notifyToggle("Instant Interaction", Value)
+    end
+})
+
+
+local StudioMoneyNotifyConnections = {}
+
+local StudioMoneyNotifyToggle = Tab1:AddToggle("StudioMoneyNotify", {
+    Text = "Studio Money Notify",
+    Default = false,
+    Tooltip = "Notifies when studio money prompt is enabled/disabled",
+    Callback = function(enabled)
+         
+        for _, conn in ipairs(StudioMoneyNotifyConnections) do
+            conn:Disconnect()
+        end
+        StudioMoneyNotifyConnections = {}
+
+        if not enabled then return end
+
+        local Workspace = game:GetService("Workspace")
+        local StudioPayFolder = Workspace:FindFirstChild("StudioPay")
+        if not StudioPayFolder then
+            warn("StudioPay folder not found in Workspace.")
+            return
+        end
+        local MoneyFolder = StudioPayFolder:FindFirstChild("Money")
+        if not MoneyFolder then
+            warn("Money folder not found inside StudioPay.")
+            return
+        end
+
+        local function watchPrompt(studioPayName)
+            local studioPay = MoneyFolder:FindFirstChild(studioPayName)
+            if not studioPay then return end
+            local part = studioPay:FindFirstChild(studioPayName)
+            if not part then return end
+            local prompt = part:FindFirstChild("Prompt")
+            if not prompt or not prompt:IsA("ProximityPrompt") then return end
+
+            local conn = prompt:GetPropertyChangedSignal("Enabled"):Connect(function()
+                if not StudioMoneyNotifyToggle.Value then return end -- toggle off? do nothing
+
+                if prompt.Enabled then
+                    Library:Notify({
+                        Title = "Studio Money Restocked",
+                        Description = "Money in studio restocked.",
+                        Time = 5,
+                        SoundId = 87082710377514
+                    })
+                else
+                    Library:Notify({
+                        Title = "Studio Money Stolen",
+                        Description = "1 Money in studio just got stolen!",
+                        Time = 5,
+                        SoundId = 87082710377514
+                    })
+                end
+            end)
+            table.insert(StudioMoneyNotifyConnections, conn)
+        end
+
+         
+        for _, name in ipairs({"StudioPay1", "StudioPay2", "StudioPay3"}) do
+            watchPrompt(name)
+        end
+
+         
+        local moneyConn = MoneyFolder.ChildAdded:Connect(function(child)
+            if not StudioMoneyNotifyToggle.Value then return end
+            if child.Name == "StudioPay1" or child.Name == "StudioPay2" or child.Name == "StudioPay3" then
+                watchPrompt(child.Name)
+            end
+        end)
+        table.insert(StudioMoneyNotifyConnections, moneyConn)
+    end
+})
+
+getgenv().AutoGrabMoney = false
+
+ task.spawn(function()
+    while task.wait(1) do
+        if getgenv().AutoGrabMoney then
+            local dollas = workspace:FindFirstChild("Dollas")
+            if not dollas then continue end
+
+            for _, item in ipairs(dollas:GetChildren()) do
+                if not getgenv().AutoGrabMoney then break end
+
+                if (item.Name == "DeadMoney" or item.Name == "Money") and item:IsA("BasePart") then
+                    local prompt = item:FindFirstChildWhichIsA("ProximityPrompt", true)
+                    if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                        local character = player.Character or player.CharacterAdded:Wait()
+                        local root = character:FindFirstChild("HumanoidRootPart")
+                        if not root then continue end
+
+                         local oldCFrame = root.CFrame
+
+                         getgenv().SwimMethod = true
+                        task.wait(0.3)
+
+                         root.CFrame = item.CFrame + Vector3.new(0, 2, 0)
+                        task.wait(0.3)
+
+                         fireproximityprompt(prompt)
+                        task.wait(0.3)
+
+                         root.CFrame = oldCFrame
+                        task.wait(0.5)
+
+                         getgenv().SwimMethod = false
+                    end
+                end
+            end
+        end
+    end
+end)
+
+ Tab1:AddToggle("AutoGrabMoneyToggle", {
+    Text = "Autopickup Cash",
+    Default = false,
+    Tooltip = "Auto steal dropped cash",
+    Callback = function(state)
+        getgenv().AutoGrabMoney = state
+    end
+})
+
+getgenv().AutoStealLootbags = false
+
+task.spawn(function()
+    while task.wait(1) do
+        if getgenv().AutoStealLootbags then
+            local storage = workspace:FindFirstChild("Storage")
+            if not storage then continue end
+
+            for _, item in ipairs(storage:GetChildren()) do
+                if not getgenv().AutoStealLootbags then break end
+
+                local prompt = item:FindFirstChild("stealprompt", true)
+                if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                    local player = game.Players.LocalPlayer
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local root = character:FindFirstChild("HumanoidRootPart")
+                    if not root then continue end
+
+                     local oldCFrame = root.CFrame
+
+                     getgenv().SwimMethod = true
+                    task.wait(0.3)
+
+                     local targetPart = prompt.Parent:IsA("BasePart") and prompt.Parent or item:FindFirstChildWhichIsA("BasePart", true)
+                    if not targetPart then continue end
+
+                     root.CFrame = targetPart.CFrame + Vector3.new(0, 2, 0)
+                    task.wait(0.3)
+
+                     fireproximityprompt(prompt)
+                    task.wait(0.3)
+
+                     root.CFrame = oldCFrame
+                    task.wait(0.5)
+
+                    getgenv().SwimMethod = false
+                end
+            end
+        end
+    end
+end)
+
+ Tab1:AddToggle("AutoStealLootbagsToggle", {
+    Text = "Auto Steal Lootbags",
+    Default = false,
+    Tooltip = "Automatically steals lootbags using stealprompt",
+    Callback = function(state)
+        getgenv().AutoStealLootbags = state
+    end
+})
+
+ getgenv().NoCameraBob = false
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+ local function disableBobScripts()
+    for _, scriptObj in ipairs(player:WaitForChild("PlayerScripts"):GetChildren()) do
+        if scriptObj:IsA("LocalScript") and scriptObj.Name:lower():find("bob") then
+            scriptObj.Disabled = true
+        end
+    end
+end
+
+ RunService.RenderStepped:Connect(function()
+    if getgenv().NoCameraBob then
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.CameraOffset.Magnitude > 0 then
+                humanoid.CameraOffset = Vector3.zero
+            end
+        end
+    end
+end)
+
+ local MyToggle = Tab1:AddToggle("NoCameraBobToggle", {
+    Text = "Disable Camera Bobbing",
+    Default = false,
+    Tooltip = "Stops walk bobbing effects",
+    Callback = function(state)
+        getgenv().NoCameraBob = state
+        if state then
+            disableBobScripts()
+            print("🔇 Camera bobbing disabled.")
+        else
+            print("🎥 Camera bobbing enabled.")
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local player = Players.LocalPlayer
+
+getgenv().AutoFOnLowHealth = false   
+
+ task.spawn(function()
+    while task.wait(0.1) do
+        if not getgenv().AutoFOnLowHealth then continue end
+
+        local character = player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid and humanoid.Health > 0 and humanoid.Health < 10 then
+            -- Spam "F"
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, nil)
+            task.wait(0.05)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, nil)
+        end
+    end
+end)
+
+ 
+local AutoFSpamToggle = Tab1:AddToggle("AutoFSpam", {
+    Text = "Instant Revive",
+    Default = false,
+    Tooltip = "Spamms f for u when ur low",
+    Callback = function(state)
+        getgenv().AutoFOnLowHealth = state
+    end
+})
+
+ 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+local BOOSTED_WALKSPEED = 25
+local DEFAULT_WALKSPEED = 16
+
+local connection
+local humanoid
+
+local function forceSpeed()
+    if humanoid and humanoid.Parent then
+        humanoid.WalkSpeed = BOOSTED_WALKSPEED
+    end
+end
+
+local SpeedBoostToggle = Tab2:AddToggle("SpeedBoost", {
+    Text = "Speed Boost",
+    Default = false,
+    Tooltip = "Gives your character a speed boost",
+    Callback = function(state)
+        if state then
+            humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if not humanoid then
+                local character = player.Character or player.CharacterAdded:Wait()
+                humanoid = character:WaitForChild("Humanoid")
+            end
+
+            if connection then connection:Disconnect() end
+            connection = RunService.Heartbeat:Connect(forceSpeed)
+        else
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
+            if humanoid then
+                humanoid.WalkSpeed = DEFAULT_WALKSPEED
+            end
+        end
+        notifyToggle("Speed Boost", state)
+    end
+})
+
+Players.PlayerAdded:Connect(function()
+    player.CharacterAdded:Connect(function(character)
+        if SpeedBoostToggle.Value then
+            humanoid = character:WaitForChild("Humanoid")
+        end
+    end)
+end)
+
+local BOOST_AMOUNT = 50
+local DEFAULT_JUMPPOWER = 50
+
+local JumpBoostToggle = Tab2:AddToggle("JumpBoost", {
+    Text = "Jump Boost",
+    Default = false,
+    Tooltip = "Gives your character a jump power boost",
+    Callback = function(state)
+        local character = player.Character or player.CharacterAdded:Wait()
+        humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not humanoid then return end
+
+        if state then
+            humanoid.JumpPower = (humanoid.JumpPower or DEFAULT_JUMPPOWER) + BOOST_AMOUNT
+        else
+            humanoid.JumpPower = DEFAULT_JUMPPOWER
+        end
+        notifyToggle("Jump Boost", state)
+    end
+})
+
+player.CharacterAdded:Connect(function(character)
+    humanoid = character:WaitForChild("Humanoid")
+    if JumpBoostToggle.Value then
+        humanoid.JumpPower = (humanoid.JumpPower or DEFAULT_JUMPPOWER) + BOOST_AMOUNT
+    else
+        humanoid.JumpPower = DEFAULT_JUMPPOWER
+    end
+end)
+
+local UserInputService = game:GetService("UserInputService")
+
+local infJumpEnabled = false
+
+local InfJumpToggle = Tab2:AddToggle("InfJump", {
+    Text = "Infinite Jump",
+    Default = false,
+    Tooltip = "Allows you to jump infinitely",
+    Callback = function(state)
+        infJumpEnabled = state
+        notifyToggle("Infinite Jump", state)
+    end
+})
+
+UserInputService.JumpRequest:Connect(function()
+    if infJumpEnabled then
+        local character = player.Character
+        if not character then return end
+        humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+            return
+        end
+        if humanoid then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+
+ 
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+local noclipConn
+
+local function EnableNoclip()
+    noclipConn = RunService.Stepped:Connect(function()
+        local char = localPlayer.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+local function DisableNoclip()
+    if noclipConn then
+        noclipConn:Disconnect()
+        noclipConn = nil
+    end
+    local char = localPlayer.Character
+    if char then
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
+end
+
+local function onNoclipToggle(state)
+    if state then
+        EnableNoclip()
+    else
+        DisableNoclip()
+    end
+end
+
+
+ local NoclipToggle = Tab2:AddToggle("NoclipToggle", {
+    Text = "Noclip",
+    Default = false,
+    Tooltip = "Walk through walls",
+    Callback = function(state)
+        onNoclipToggle(state)
+    end
+})
+
+ local NoclipKeybind = NoclipToggle:AddKeyPicker("NoclipKeybind", {
+    Default = "",
+    Text = "Noclip Toggle Key",
+    Mode = "Toggle",  
+    SyncToggleState = false,
+
+    Callback = function(value)
+        onNoclipToggle(value)
+         NoclipToggle:Set(value)
+    end
+})
+
+ local LeftGroupbox = TeleportsTab:AddLeftGroupbox("Teleports", "map-pin-check")
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+ task.spawn(function()
+    while task.wait() do
+        if getgenv().SwimMethod then
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+            end
+        end
+    end
+end)
+
+getgenv().SwimMethod = false
+
+ local locations = {
+    ["Deli Market 🥪"] = Vector3.new(-602.3944091796875, 253.73313903808594, -584.2000732421875),
+    ["Capital One Bank 🏦"] = Vector3.new(-205, 284, -1214),
+    ["Ice Box 🧊"] = Vector3.new(-198.8927001953125, 283.8486633300781, -1170.4500732421875),
+    ["Domino's 🍕"] = Vector3.new(-742.5213012695312, 253.22897338867188, -946.2092895507812),
+    ["Hotel 🏨"] = Vector3.new(-1012, 266, -933),
+    ["Drip Store 👓"] = Vector3.new(67462.6953125, 10489.0322265625, 546.6762084960938),
+    ["Gun Shop 🔫"] = Vector3.new(92970.4140625, 122097.953125, 17023.623046875),
+    ["Car Dealer 🚗"] = Vector3.new(-378.6668701171875, 253.2564697265625, -1245.4259033203125),
+    ["Laundromat 💷"] = Vector3.new(-979.4635620117188, 253.65318298339844, -689.3339233398438),
+    ["Studio 🎙"] = Vector3.new(93408.453125, 14484.7158203125, 570.139404296875),
+    ["Basketball Court 🏀"] = Vector3.new(-1055.6407470703125, 253.51364135742188, -497.10528564453125),
+    ["Robbable Ice Box 🧊"] = Vector3.new(-209.68360900878906, 283.4959411621094, -1265.5286865234375),
+    ["Exotic Dealer / Grass House 🍃"] = Vector3.new(-1521.943115234375, 272.5462646484375, -984.3020629882812),
+    ["Safe 🔒"] = Vector3.new(-190, 295, -1010),
+    ["Roof Top / Bank Tools 🛠"] = Vector3.new(-385, 340, -557),
+    ["Second Gun Shop 🔫"] = Vector3.new(66202, 123615.7109375, 5749.81689453125),
+    ["Construction Job 🔨"] = Vector3.new(-1729, 371, -1171),
+    ["Hospital 🏥"] = Vector3.new(-1446.0428466796875, 253.43112182617188, -32.28108596801758),
+    ["Mansion 🏚️"] = Vector3.new(-782.2013549804688, 253.33062744140625, 1312.432861328125),
+    ["RPT 🏢"] = Vector3.new(-1566.1051025390625, 253.30091857910156, -627.2307739257812),
+    ["New Penthouse 🏙️"] = Vector3.new(-95.71463012695312, 397.1382751464844, -563.891845703125)
+}
+
+ local function showBlackScreen()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "BlackoutOverlay"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.Parent = player:WaitForChild("PlayerGui")
+
+    local black = Instance.new("Frame")
+    black.Size = UDim2.new(1, 0, 1, 0)
+    black.Position = UDim2.new(0, 0, 0, 0)
+    black.BackgroundColor3 = Color3.new(0, 0, 0)
+    black.BorderSizePixel = 0
+    black.ZIndex = 999
+    black.Parent = gui
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0, 200)
+    label.Position = UDim2.new(0, 0, 0.5, -100)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.TextScaled = true
+    label.Font = Enum.Font.GothamBlack
+    label.Text = "Discord.gg/64thlol\nBypassed and made by tripzzfrm /creator\nCheapest Paid Script!"
+    label.TextStrokeTransparency = 0.3
+    label.TextStrokeColor3 = Color3.new(0, 0, 0)
+    label.TextYAlignment = Enum.TextYAlignment.Center
+    label.ZIndex = 1000
+    label.Parent = gui
+end
+
+local function removeBlackScreen()
+    local gui = player.PlayerGui:FindFirstChild("BlackoutOverlay")
+    if gui then gui:Destroy() end
+end
+
+ local function teleportTo(pos, name)
+
+    -- Halloween teleport notification (added by ChatGPT)
+    pcall(function()
+        if Library and type(Library.Notify) == "function" then
+            Library:Notify({
+                Title = "64thlol teleporting",
+                Description = "Teleporting to " .. (name or tostring(pos) or "destination"),
+                Time = 3
+            })
+        end
+    end)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local root = character:FindFirstChild("HumanoidRootPart")
+
+    if not root then
+        if Library and Library.Notify then
+            Library:Notify({
+                Title = "Error",
+                Description = "Could not find HumanoidRootPart!",
+                Time = 3
+            })
+        end
+        return
+    end
+
+    showBlackScreen()
+    getgenv().SwimMethod = true
+    task.wait(1)
+
+    root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+
+    task.wait(0.5)
+    getgenv().SwimMethod = false
+    removeBlackScreen()
+
+    if Library and Library.Notify then
+        Library:Notify({
+            Title = "Teleported",
+            Description = "You have been teleported to " .. name,
+            Time = 3,
+            SoundId = 123456789
+        })
+    end
+end
+
+ for name, pos in pairs(locations) do
+    LeftGroupbox:AddButton({
+        Text = name,
+        Func = function()
+            teleportTo(pos, name)
+        end,
+        DoubleClick = false
+    })
+end
+
+ local LeftGroupbox = AutofarmsTab:AddLeftGroupbox("Autofarms", "refresh-cw")
+
+local player = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PawnRemote = ReplicatedStorage:WaitForChild("PawnRemote")
+local Backpack = player:WaitForChild("Backpack")
+
+ task.spawn(function()
+    while task.wait() do
+        if getgenv().SwimMethod then
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+            end
+        end
+    end
+end)
+
+local autofarmTask
+local isRunning = false
+
+local function teleportTo(pos)
+
+    -- Halloween teleport notification (added by ChatGPT)
+    pcall(function()
+        if Library and type(Library.Notify) == "function" then
+            Library:Notify({
+                Title = "64thlol teleporting",
+                Description = "Teleporting to " .. (name or tostring(pos) or "destination"),
+                Time = 3
+            })
+        end
+    end)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local root = character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    getgenv().SwimMethod = true
+    task.wait(1)
+    root.CFrame = CFrame.new(pos)
+    task.wait(0.5)
+    getgenv().SwimMethod = false
+end
+
+ local function fireRemoteForAllBackpackItems()
+    for _, item in pairs(Backpack:GetChildren()) do
+        pcall(function()
+            PawnRemote:FireServer(item.Name)
+        end)
+    end
+end
+
+ Backpack.ChildAdded:Connect(function(child)
+    if isRunning then
+        pcall(function()
+            PawnRemote:FireServer(child.Name)
+        end)
+    end
+end)
+
+local function startAutofarm()
+    if autofarmTask then return end
+    isRunning = true
+    print("Dumpster Autofarm started")
+
+     autofarmTask = task.spawn(function()
+        while isRunning do
+            local dumpsters = {}
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("Part") and v.Name == "DumpsterPromt" then
+                    local prompt = v:FindFirstChildWhichIsA("ProximityPrompt")
+                    if prompt then
+                        table.insert(dumpsters, { part = v, prompt = prompt })
+                    end
+                end
+            end
+
+            for _, entry in ipairs(dumpsters) do
+                if not isRunning then break end
+                local part = entry.part
+                local prompt = entry.prompt
+
+                if part and prompt and part:IsDescendantOf(workspace) then
+                    teleportTo(part.Position + Vector3.new(0, 3, 0))
+                    task.wait(0.6)
+
+                    pcall(function()
+                        fireproximityprompt(prompt)
+                    end)
+
+                    task.wait(1)
+                end
+            end
+
+            task.wait(2)
+        end
+        print("Dumpster Autofarm stopped")
+        autofarmTask = nil
+    end)
+
+     fireRemoteForAllBackpackItems()
+end
+
+local function stopAutofarm()
+    isRunning = false
+end
+
+LeftGroupbox:AddButton({
+    Text = "Dumpster Autofarm",
+    Func = function()
+        if not isRunning then
+            startAutofarm()
+        else
+            stopAutofarm()
+        end
+    end,
+    DoubleClick = false
+})
+
+ 
+local player = game:GetService("Players").LocalPlayer
+local StudioPayFolder = workspace:WaitForChild("StudioPay"):WaitForChild("Money")
+
+getgenv().SwimMethod = false
+getgenv().StudioPayFarm = false
+
+ task.spawn(function()
+    while task.wait() do
+        if getgenv().SwimMethod then
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+            end
+        end
+    end
+end)
+
+local function teleportTo(pos)
+
+    -- Halloween teleport notification (added by ChatGPT)
+    pcall(function()
+        if Library and type(Library.Notify) == "function" then
+            Library:Notify({
+                Title = "64thlol teleporting",
+                Description = "Teleporting to " .. (name or tostring(pos) or "destination"),
+                Time = 3
+            })
+        end
+    end)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local root = character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    getgenv().SwimMethod = true
+    task.wait(1)           
+    root.CFrame = CFrame.new(pos)
+    task.wait(0.5)         
+    getgenv().SwimMethod = false
+end
+
+local function interactPrompt(prompt)
+    if fireproximityprompt then
+        fireproximityprompt(prompt)
+    else
+        prompt:InputHoldBegin()
+        prompt:InputHoldEnd()
+    end
+end
+
+local autofarmRunning = false
+
+ LeftGroupbox:AddButton({
+    Text = "Studio Autofarm",
+    Func = function()
+        autofarmRunning = not autofarmRunning
+
+        if autofarmRunning then
+            getgenv().StudioPayFarm = true
+            print("[StudioPayFarm] Started")
+        else
+            getgenv().StudioPayFarm = false
+            print("[StudioPayFarm] Stopped")
+        end
+    end,
+    DoubleClick = false
+})
+
+ task.spawn(function()
+    while true do
+        if getgenv().StudioPayFarm then
+            local enabledPrompts = {}
+
+            for _, studioPayModel in pairs(StudioPayFolder:GetChildren()) do
+                for _, part in pairs(studioPayModel:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        local prompt = part:FindFirstChild("Prompt")
+                        if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                            table.insert(enabledPrompts, {part = part, prompt = prompt})
+                        end
+                    end
+                end
+            end
+
+            if #enabledPrompts > 0 then
+                local character = player.Character or player.CharacterAdded:Wait()
+                local root = character:FindFirstChild("HumanoidRootPart")
+                if not root then
+                    task.wait(3)
+                    continue
+                end
+                local originalPos = root.Position
+
+                for _, entry in ipairs(enabledPrompts) do
+                    teleportTo(entry.part.Position + Vector3.new(0, 3, 0))
+                    task.wait(0.2)          
+                    interactPrompt(entry.prompt)
+                    task.wait(0.1)           
+                end
+
+                teleportTo(originalPos)
+            else
+                task.wait(1)
+            end
+        else
+            task.wait(1)
+        end
+    end
+end)
+
+
+ 
+local autofarmRunning = false
+local autofarmThread
+
+LeftGroupbox:AddButton({
+    Text = "Toggle Construction Autofarm",
+    Func = function()
+        autofarmRunning = not autofarmRunning
+
+        if autofarmRunning then
+            print("[Autofarm] Started")
+            
+            autofarmThread = task.spawn(function()
+                local function startjob()
+                    if not game.Players.LocalPlayer:GetAttribute("WorkingJob") or game.Players.LocalPlayer:GetAttribute("WorkingJob") == false then
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.ConstructionStuff["Start Job"].CFrame
+                        fireproximityprompt(workspace.ConstructionStuff["Start Job"].Prompt)
+                    end
+                end
+
+                local function autoequipwood()
+                    if game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("PlyWood") then
+                        game:GetService("Players").LocalPlayer.Backpack.PlyWood.Parent = game:GetService("Players").LocalPlayer.Character
+                    end
+                end
+
+                local function wood()
+                    for _, v in pairs(workspace.ConstructionStuff:GetDescendants()) do
+                        if v:IsA("ProximityPrompt") and v.ActionText == "Wall" then
+                            fireproximityprompt(v)
+                        end
+                    end
+                end
+
+                local function grabwood()
+                    for _, v in pairs(workspace.ConstructionStuff["Grab Wood"]:GetChildren()) do
+                        if v:IsA("ProximityPrompt") and v.ActionText == "Wood" then
+                            fireproximityprompt(v)
+                        end
+                    end
+                end
+
+                local function mainautofarm()
+                    for _, v in pairs(workspace.ConstructionStuff:GetDescendants()) do
+                        if v:IsA("Part") and v:FindFirstChild("Attachment") then
+                            local gui = v.Attachment:FindFirstChild("Gui")
+                            if gui and gui:FindFirstChild("Label") and not string.find(gui.Label.Text, "RESETS") then
+                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                            end
+                        end
+                    end
+
+                    if not (game.Players.LocalPlayer.Backpack:FindFirstChild("PlyWood") or game.Players.LocalPlayer.Character:FindFirstChild("PlyWood")) then
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1728, 371, -1177)
+                    end
+                end
+
+                while autofarmRunning do
+                    task.wait(0.25)
+                    xpcall(startjob, warn)
+                    xpcall(grabwood, warn)
+                    xpcall(autoequipwood, warn)
+                    xpcall(wood, warn)
+                    xpcall(mainautofarm, warn)
+                end
+            end)
+
+        else
+            print("[Autofarm] Stopped")
+            if autofarmThread then
+                task.cancel(autofarmThread)
+            end
+        end
+    end,
+    DoubleClick = false
+})
+
+
+ local RightGroupbox = AutofarmsTab:AddRightGroupbox("Atm", "hand")
+
+local inputAmount = "0"  
+
+local AmountInput = RightGroupbox:AddInput("AmountInput", {
+    Text = "Amount",
+    Default = "0",
+    Numeric = true,
+    Finished = true,
+    Placeholder = "Enter amount...",
+    Callback = function(Value)
+        inputAmount = Value
+        print("Amount input updated:", inputAmount)
+    end
+})
+
+local DepositButton = RightGroupbox:AddButton({
+    Text = "Deposit",
+    Func = function()
+        if inputAmount and tonumber(inputAmount) then
+            local args = {
+                "depo",
+                tostring(inputAmount)
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("BankAction"):FireServer(unpack(args))
+            print("Deposited:", inputAmount)
+        else
+            print("Invalid amount for deposit.")
+        end
+    end,
+    DoubleClick = false
+})
+
+local WithdrawButton = RightGroupbox:AddButton({
+    Text = "Withdraw",
+    Func = function()
+        if inputAmount and tonumber(inputAmount) then
+            local args = {
+                "with",
+                tostring(inputAmount)
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("BankAction"):FireServer(unpack(args))
+            print("Withdrew:", inputAmount)
+        else
+            print("Invalid amount for withdrawal.")
+        end
+    end,
+    DoubleClick = false
+})
+
+local LeftGroupbox = AutofarmsTab:AddLeftGroupbox("Inf Money", "refresh-cw")
+
+local Button = LeftGroupbox:AddButton({
+    Text = "Inf Money (Hold filled cupz)",
+    Func = function()
+        local Players = game:GetService("Players")
+        local RunService = game:GetService("RunService")
+        local player = Players.LocalPlayer
+
+         task.spawn(function()
+            while task.wait() do
+                if getgenv().SwimMethod then
+                    local char = player.Character
+                    if char and char:FindFirstChild("Humanoid") then
+                        char.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+                    end
+                end
+            end
+        end)
+
+         local function showBlackScreen()
+            local gui = Instance.new("ScreenGui")
+            gui.Name = "BlackoutOverlay"
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Parent = player:WaitForChild("PlayerGui")
+
+            local black = Instance.new("Frame")
+            black.Size = UDim2.new(1, 0, 1, 0)
+            black.BackgroundColor3 = Color3.new(0, 0, 0)
+            black.BorderSizePixel = 0
+            black.ZIndex = 999
+            black.Parent = gui
+
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 0, 200)
+            label.Position = UDim2.new(0, 0, 0.5, -100)
+            label.BackgroundTransparency = 1
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.TextScaled = true
+            label.Font = Enum.Font.GothamBlack
+            label.Text = "Discord.gg/64thlol\nInf Money Running...\nHold Filled Cupz!"
+            label.TextStrokeTransparency = 0.3
+            label.TextStrokeColor3 = Color3.new(0, 0, 0)
+            label.ZIndex = 1000
+            label.Parent = gui
+        end
+
+        local function removeBlackScreen()
+            local gui = player.PlayerGui:FindFirstChild("BlackoutOverlay")
+            if gui then gui:Destroy() end
+        end
+
+         local function teleportAndSpam()
+            getgenv().SwimMethod = true
+
+            local character = player.Character or player.CharacterAdded:Wait()
+            local rootPart = character:WaitForChild("HumanoidRootPart")
+            local originalCFrame = rootPart.CFrame
+
+            local iceFruitPart = workspace:WaitForChild("IceFruit Sell")
+            local prompt = iceFruitPart:WaitForChild("ProximityPrompt")
+            prompt.HoldDuration = 0
+            prompt.MaxActivationDistance = math.huge
+
+             local behindOffset = iceFruitPart.CFrame.LookVector * -5
+            local targetPosition = iceFruitPart.Position + behindOffset + Vector3.new(0, 3, 0)
+            rootPart.CFrame = CFrame.new(targetPosition, iceFruitPart.Position)
+
+            task.wait(0.2)
+
+            local distance = (rootPart.Position - iceFruitPart.Position).Magnitude
+            if distance > 12 then
+                warn("Too far — try again")
+                getgenv().SwimMethod = false
+                return
+            end
+
+             for i = 1, 250 do
+                task.spawn(function()
+                    pcall(function()
+                        fireproximityprompt(prompt, 1)
+                    end)
+                end)
+            end
+
+             showBlackScreen()
+            task.wait(5)
+
+             rootPart.CFrame = originalCFrame
+            getgenv().SwimMethod = false
+            removeBlackScreen()
+        end
+
+        teleportAndSpam()
+    end,
+    DoubleClick = false
+})
+
+-- auto inf money from 64thlol upd3
+local Button = LeftGroupbox:AddButton({
+    Text = "Ice-Fruit Money System",
+    Func = function()
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local StarterGui = game:GetService("StarterGui")
+        local Workspace = game:GetService("Workspace")
+        local LocalPlayer = Players.LocalPlayer
+        
+        -- Function to check for filled Ice-Fruit Cup
+        local function GetFruitCup()
+            local Found, Cup = false, nil
+            
+            for Index, Value in next, {LocalPlayer.Backpack:GetChildren(), LocalPlayer.Character:GetChildren()} do
+                for _Index, _Value in Value do
+                    if _Value:IsA("Tool") and _Value.Name == "Ice-Fruit Cupz" then
+                        if _Value["IceFruit Cup"]["IceFruit PunchMedium"].Transparency ~= 1 then
+                            Found = true
+                            Cup = _Value
+                            break
+                        end
+                    end
+                end
+            end 
+            
+            return Found, Cup
+        end
+        
+        -- Enhanced Teleport function with comprehensive swim method bypass
+        local function Teleport(targetCFrame, keepSwimActive)
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                -- Activate swim method for anti-cheat bypass
+                getgenv().SwimMethod = true
+                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+                
+                task.wait(0.3)
+                
+                -- Safe teleportation
+                LocalPlayer.Character.HumanoidRootPart.CFrame = targetCFrame
+                
+                task.wait(0.3)
+                
+                -- Only restore normal state if not keeping swim active
+                if not keepSwimActive then
+                    LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+                    getgenv().SwimMethod = false
+                end
+            end
+        end
+        
+        -- Main Ice-Fruit Money Generation
+        local Found, Cup = GetFruitCup()
+        
+        if Cup and Found then
+            Library:Notify({
+                Title = "Ice-Fruit System",
+                Description = "Generating illegal cash with filled cup... (Anti-cheat bypass active)",
+                Time = 5
+            })
+            
+            local OLDCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+            
+            if Cup.Parent == LocalPlayer.Backpack then
+                LocalPlayer.Character.Humanoid:EquipTool(Cup)
+                task.wait(1)
+            end 
+            
+            Teleport(Workspace["IceFruit Sell"].CFrame)
+            task.wait(.5)
+            
+            -- Spam interaction 4000 times
+            for Index=1, 4000 do
+                task.spawn(function()
+                    fireproximityprompt(Workspace["IceFruit Sell"].ProximityPrompt)
+                end)
+            end
+            
+            Teleport(OLDCFrame)
+            
+            Library:Notify({
+                Title = "Ice-Fruit System",
+                Description = "Money generation complete!",
+                Time = 5
+            })
+            
+            return
+        end
+        
+        -- If no filled cup, auto-setup the money system
+        Library:Notify({
+            Title = "Ice-Fruit System",
+            Description = "Setting up Ice-Fruit money system...",
+            Time = 5
+        })
+        
+        local OLDCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+        local Itemz = {"FijiWater", "FreshWater", "Ice-Fruit Bag", "Ice-Fruit Cupz"}
+        local Stove
+        
+        -- Find available cooking pot
+        for Index, Value in Workspace.CookingPots:GetChildren() do
+            if Value:IsA("Model") then
+                if Value:FindFirstChildWhichIsA("ProximityPrompt", true).ActionText == "Turn On" and Value:FindFirstChildWhichIsA("ProximityPrompt", true).Enabled then
+                    Stove = Value
+                    break
+                end
+            end
+        end
+        
+        -- Buy required items
+        for Index, Value in Itemz do
+            if not LocalPlayer.Backpack:FindFirstChild(Value) then
+                ReplicatedStorage:WaitForChild("ExoticShopRemote"):InvokeServer(Value)
+                task.wait(1)
+            end
+        end
+        
+        -- Check if all items were purchased
+        local Check = false
+        for Index, Value in Itemz do
+            if not LocalPlayer.Backpack:FindFirstChild(Value) then
+                Check = true
+            end
+        end
+        
+        if Check then
+            Library:Notify({
+                Title = "Ice-Fruit System",
+                Description = "Could not find items! Need more than $5000.",
+                Time = 10
+            })
+            return
+        end
+        
+        Library:Notify({
+            Title = "Ice-Fruit System",
+            Description = "Cooking Ice-Fruit... Please wait 1-2 minutes.",
+            Time = 5
+        })
+        
+        Teleport(Stove.CookPart.CFrame)
+        task.wait(1)
+        
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+        LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        task.wait(1.5)
+        
+        fireproximityprompt(Stove:FindFirstChildWhichIsA("ProximityPrompt", true))
+        task.wait(2)
+        
+        -- Add ingredients to cooking pot
+        for Index, Value in {"FijiWater", "FreshWater", "Ice-Fruit Bag"} do
+            LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack[Value])
+            task.wait(1)
+            fireproximityprompt(Stove:FindFirstChildWhichIsA("ProximityPrompt", true))
+            task.wait(3)
+        end
+        
+        -- Wait for cooking to complete
+        repeat wait() until 
+        Stove.CookPart.Steam.LoadUI.Enabled == false
+        
+        -- Equip the cup and finish cooking
+        if not LocalPlayer.Character:FindFirstChild("Ice-Fruit Cupz") then
+            LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack["Ice-Fruit Cupz"])
+            task.wait(1)
+        end
+        
+        task.wait(1)
+        fireproximityprompt(Stove:FindFirstChildWhichIsA("ProximityPrompt", true))
+        task.wait(3)
+        
+        LocalPlayer.Character.HumanoidRootPart.Anchored = false
+        
+        -- Teleport to Ice-Fruit Sell and spam for money
+        getgenv().SwimMethod = true
+        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+        task.wait(0.3)
+        
+        Teleport(Workspace["IceFruit Sell"].CFrame)
+        task.wait(1)
+        
+        LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        task.wait(1.5)
+        
+        if not LocalPlayer.Character:FindFirstChild("Ice-Fruit Cupz") then
+            LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack["Ice-Fruit Cupz"])
+            task.wait(1)
+        end
+        
+        Workspace["IceFruit Sell"].ProximityPrompt.HoldDuration = 0
+        
+        -- Keep swim method active during money generation
+        getgenv().SwimMethod = true
+        
+        -- Spam interaction 4000 times for maximum money
+        for Index=1, 4000 do
+            task.spawn(function()
+                fireproximityprompt(Workspace["IceFruit Sell"].ProximityPrompt)
+            end)
+        end
+        
+        LocalPlayer.Character.HumanoidRootPart.Anchored = false
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+        
+        task.wait(0.5)
+        
+        -- Safe teleport back with swim method
+        getgenv().SwimMethod = true
+        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+        task.wait(0.3)
+        Teleport(OLDCFrame)
+        task.wait(0.3)
+        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+        getgenv().SwimMethod = false
+        
+        Library:Notify({
+            Title = "Ice-Fruit System",
+            Description = "Ice-Fruit money generation complete!",
+            Time = 5
+        })
+    end,
+    DoubleClick = false
+})
+
+
+
+
+
+local Button = LeftGroupbox:AddButton({
+    Text = "Setup infinite Money",
+    Func = function()
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        local ExoticShopRemote = ReplicatedStorage:WaitForChild("ExoticShopRemote")
+
+         local function showBlackScreen()
+            local gui = Instance.new("ScreenGui")
+            gui.Name = "BlackoutOverlay"
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Parent = player:WaitForChild("PlayerGui")
+
+            local black = Instance.new("Frame")
+            black.Size = UDim2.new(1, 0, 1, 0)
+            black.Position = UDim2.new(0, 0, 0, 0)
+            black.BackgroundColor3 = Color3.new(0, 0, 0)
+            black.BorderSizePixel = 0
+            black.ZIndex = 999
+            black.Parent = gui
+
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 0, 200)
+            label.Position = UDim2.new(0, 0, 0.5, -100)
+            label.BackgroundTransparency = 1
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.TextScaled = true
+            label.Font = Enum.Font.GothamBlack
+            label.Text = "Discord.gg/64thlol\nBypassed and made by tripzzfrm /creator\nCheapest Paid Script!"
+            label.TextStrokeTransparency = 0.3
+            label.TextStrokeColor3 = Color3.new(0, 0, 0)
+            label.TextYAlignment = Enum.TextYAlignment.Center
+            label.ZIndex = 1000
+            label.Parent = gui
+        end
+
+        local function removeBlackScreen()
+            local gui = player.PlayerGui:FindFirstChild("BlackoutOverlay")
+            if gui then gui:Destroy() end
+        end
+
+         task.spawn(function()
+            while task.wait() do
+                if getgenv().SwimMethod then
+                    local char = player.Character
+                    if char and char:FindFirstChild("Humanoid") then
+                        char.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+                    end
+                end
+            end
+        end)
+
+         local function teleportWithFreeze(pos)
+            getgenv().SwimMethod = true
+            task.wait(1)
+            rootPart.CFrame = CFrame.new(pos)
+            task.wait(0.1)
+            getgenv().SwimMethod = false
+        end
+
+         local function fireAllRemotes()
+            local items = {
+                "Ice-Fruit Bag",
+                "Ice-Fruit Cupz",
+                "FijiWater",
+                "FreshWater",
+            }
+
+             task.spawn(function()
+                for _, itemName in ipairs(items) do
+                    task.spawn(function()
+                        pcall(function()
+                            ExoticShopRemote:InvokeServer(itemName)
+                        end)
+                    end)
+                end
+            end)
+        end
+
+         showBlackScreen()
+
+         teleportWithFreeze(Vector3.new(-118, 293, -945))
+
+         fireAllRemotes()
+
+         task.delay(1.25, removeBlackScreen)
+    end,
+    DoubleClick = false
+})
+
+--[[ 
+local Button = LeftGroupbox:AddButton({
+    Text = "TP MoneyWash",
+    Func = function()
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        -- Black screen UI with text
+        local function showBlackScreen()
+            local gui = Instance.new("ScreenGui")
+            gui.Name = "BlackoutOverlay"
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Parent = player:WaitForChild("PlayerGui")
+
+            local black = Instance.new("Frame")
+            black.Size = UDim2.new(1, 0, 1, 0)
+            black.Position = UDim2.new(0, 0, 0, 0)
+            black.BackgroundColor3 = Color3.new(0, 0, 0)
+            black.BorderSizePixel = 0
+            black.ZIndex = 999
+            black.Parent = gui
+
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 0, 200)
+            label.Position = UDim2.new(0, 0, 0.5, -100)
+            label.BackgroundTransparency = 1
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.TextScaled = true
+            label.Font = Enum.Font.GothamBlack
+            label.Text = "Discord.gg/64thlol\nBypassed and made by tripzzfrm /creator\nCheapest Paid Script!"
+            label.TextStrokeTransparency = 0.3
+            label.TextStrokeColor3 = Color3.new(0, 0, 0)
+            label.TextYAlignment = Enum.TextYAlignment.Center
+            label.ZIndex = 1000
+            label.Parent = gui
+        end
+
+        local function removeBlackScreen()
+            local gui = player.PlayerGui:FindFirstChild("BlackoutOverlay")
+            if gui then gui:Destroy() end
+        end
+
+        -- Show blackout and enable freeze
+        showBlackScreen()
+        getgenv().SwimMethod = true
+
+        -- Freeze loop
+        local freezeConnection
+        freezeConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not getgenv().SwimMethod then
+                freezeConnection:Disconnect()
+                return
+            end
+            local char = player.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+            end
+        end)
+
+        -- Teleport
+        rootPart.CFrame = CFrame.new(Vector3.new(-976, 256, -706) + Vector3.new(0, 3, 0))
+
+        task.wait(0.5)  -- wait a bit to stabilize
+
+        -- Disable freeze and remove blackout
+        getgenv().SwimMethod = false
+        removeBlackScreen()
+    end,
+    DoubleClick = false
+})
+
+local Button = LeftGroupbox:AddButton({
+    Text = "TP Bank",
+    Func = function()
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        -- Black screen UI with text
+        local function showBlackScreen()
+            local gui = Instance.new("ScreenGui")
+            gui.Name = "BlackoutOverlay"
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Parent = player:WaitForChild("PlayerGui")
+
+            local black = Instance.new("Frame")
+            black.Size = UDim2.new(1, 0, 1, 0)
+            black.Position = UDim2.new(0, 0, 0, 0)
+            black.BackgroundColor3 = Color3.new(0, 0, 0)
+            black.BorderSizePixel = 0
+            black.ZIndex = 999
+            black.Parent = gui
+
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 0, 200)
+            label.Position = UDim2.new(0, 0, 0.5, -100)
+            label.BackgroundTransparency = 1
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.TextScaled = true
+            label.Font = Enum.Font.GothamBlack
+            label.Text = "Discord.gg/64thlol\nBypassed and made by tripzzfrm /creator\nCheapest Paid Script!"
+            label.TextStrokeTransparency = 0.3
+            label.TextStrokeColor3 = Color3.new(0, 0, 0)
+            label.TextYAlignment = Enum.TextYAlignment.Center
+            label.ZIndex = 1000
+            label.Parent = gui
+        end
+
+        local function removeBlackScreen()
+            local gui = player.PlayerGui:FindFirstChild("BlackoutOverlay")
+            if gui then gui:Destroy() end
+        end
+
+        -- Show blackout and enable freeze
+        showBlackScreen()
+        getgenv().SwimMethod = true
+
+        -- Freeze loop
+        local freezeConnection
+        freezeConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not getgenv().SwimMethod then
+                freezeConnection:Disconnect()
+                return
+            end
+            local char = player.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+            end
+        end)
+
+        -- Teleport
+        rootPart.CFrame = CFrame.new(Vector3.new(-207, 286, -1195) + Vector3.new(0, 3, 0))
+
+        task.wait(0.5)  -- wait a bit to stabilize
+
+        -- Disable freeze and remove blackout
+        getgenv().SwimMethod = false
+        removeBlackScreen()
+    end,
+    DoubleClick = false
+})
+
+]]
+
+local RightGroupbox = AutofarmsTab:AddRightGroupbox("Auto Services", "refresh-cw")
+
+ getgenv().MoneyDropEnabled = false
+
+ task.spawn(function()
+    while task.wait(0.3) do  
+        if getgenv().MoneyDropEnabled then
+            local args = {
+                "Drop",
+                "10000"
+            }
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("BankProcessRemote"):InvokeServer(unpack(args))
+            end)
+        end
+    end
+end)
+
+ RightGroupbox:AddToggle("MoneyDropToggle", {
+    Text = "Money Drop 10k",
+    Default = false,
+    Tooltip = "Drops 10K automaticly",
+    Callback = function(state)
+        getgenv().MoneyDropEnabled = state
+    end
+})
+
+ 
+ getgenv().AutoGrabMoney = false
+
+ task.spawn(function()
+    while task.wait(1) do
+        if getgenv().AutoGrabMoney then
+            local dollas = workspace:FindFirstChild("Dollas")
+            if not dollas then continue end
+
+            for _, item in ipairs(dollas:GetChildren()) do
+                if not getgenv().AutoGrabMoney then break end
+
+                if (item.Name == "DeadMoney" or item.Name == "Money") and item:IsA("BasePart") then
+                    local prompt = item:FindFirstChildWhichIsA("ProximityPrompt", true)
+                    if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                        local character = player.Character or player.CharacterAdded:Wait()
+                        local root = character:FindFirstChild("HumanoidRootPart")
+                        if not root then continue end
+
+                         local oldCFrame = root.CFrame
+
+                         getgenv().SwimMethod = true
+                        task.wait(0.3)
+
+                         root.CFrame = item.CFrame + Vector3.new(0, 2, 0)
+                        task.wait(0.3)
+
+                         fireproximityprompt(prompt)
+                        task.wait(0.3)
+
+                         root.CFrame = oldCFrame
+                        task.wait(0.5)
+
+                         getgenv().SwimMethod = false
+                    end
+                end
+            end
+        end
+    end
+end)
+
+ RightGroupbox:AddToggle("AutoGrabMoneyToggle", {
+    Text = "Auto Steal Dropped Cash",
+    Default = false,
+    Tooltip = "Auto steal dropped cash",
+    Callback = function(state)
+        getgenv().AutoGrabMoney = state
+    end
+})
+
+
+ 
+local LeftGroupbox = ShopTab:AddLeftGroupbox("Quick Buy", "cart")
+
+local shopRemote = game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote")
+
+local function createBuyButton(name, itemName)
+    LeftGroupbox:AddButton({
+        Text = name,
+        Func = function()
+            local args = {itemName}
+            local success, err = pcall(function()
+                shopRemote:InvokeServer(unpack(args))
+            end)
+            if success then
+                Library:Notify({
+                    Title = "Success",
+                    Description = "Successfully Purchased " .. itemName,
+                    Time = 5,
+                    SoundId = 123456789 -- replace with your desired sound ID or remove this line
+                })
+            else
+                Library:Notify({
+                    Title = "Error",
+                    Description = "Failed to Purchase " .. itemName .. ": " .. tostring(err),
+                    Time = 5,
+                    SoundId = 123456789 -- optional error sound
+                })
+            end
+        end,
+        DoubleClick = false
+    })
+end
+
+createBuyButton("Buy Shiesty", "Shiesty")
+createBuyButton("Buy Water", "Water")
+createBuyButton("Buy Blue Gloves", "BluGloves")
+createBuyButton("Buy White Gloves", "WhiteGloves")
+createBuyButton("Buy Black Gloves", "BlackGloves")
+createBuyButton("Buy Steak", "RawSteak")
+createBuyButton("Buy White Shiesty", "WhiteShiesty")
+createBuyButton("Buy Raw Chicken", "RawChicken")
+createBuyButton("Buy Pink Camo Gloves", "PinkCamoGloves")
+createBuyButton("Buy Red Gloves", "RedGloves")
+createBuyButton("Buy Blue Camo Gloves", "BluCamoGloves")
+createBuyButton("Buy Blue Camo Shiesty", "BluShiestyCam")
+createBuyButton("Buy Yellow Camo Gloves", "YelloCamoGloves")
+createBuyButton("Buy Yellow Shiesty", "YelloShiesty")
+createBuyButton("Buy Red Camo Gloves", "RedCamoGloves")
+
+ local RightGroupbox = ShopTab:AddRightGroupbox("Quick Outfits", "cart")
+
+local remote = game:GetService("ReplicatedStorage"):WaitForChild("ClothShopRemote")
+
+RightGroupbox:AddButton({
+    Text = "Spiderman",
+    Func = function()
+        local actions = {
+            {"Buy", "Shirts", "Spiderman"},
+            {"Wear", "Shirts", "Spiderman"},
+            {"Buy", "Pants", "Spiderman"},
+            {"Wear", "Pants", "Spiderman"},
+            {"Buy", "Shiestys", "RedShiesty"},
+            {"Wear", "Shiestys", "RedShiesty"},
+        }
+        for _, args in ipairs(actions) do
+            remote:FireServer(unpack(args))
+        end
+        Library:Notify({
+            Title = "Success",
+            Description = "Successfully equipped Spiderman outfit",
+            Time = 5,
+            SoundId = 123456789,
+        })
+    end,
+    DoubleClick = false
+})
+
+RightGroupbox:AddButton({
+    Text = "All Black Outfit",
+    Func = function()
+        local actions = {
+            {"Buy", "Shirts", "Black Amiri Star"},
+            {"Wear", "Shirts", "Black Amiri Star"},
+            {"Buy", "Pants", "Sweats Wit Black AF1"},
+            {"Wear", "Pants", "Sweats Wit Black AF1"},
+            {"Buy", "Shiestys", "Shiesty"},
+            {"Wear", "Shiestys", "Shiesty"},
+        }
+        for _, args in ipairs(actions) do
+            remote:FireServer(unpack(args))
+        end
+        Library:Notify({
+            Title = "Success",
+            Description = "Successfully equipped All Black outfit",
+            Time = 5,
+            SoundId = 123456789,
+        })
+    end,
+    DoubleClick = false
+})
+
+-- 
+
+local Tabbox = TrollTab:AddLeftTabbox("Settings")
+local Tab3 = Tabbox:AddTab("Game Mods")
+local Tab4 = Tabbox:AddTab("Gun Mods")
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function getCharacterAndRootPart()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+    return character, rootPart
+end
+
+local function forceJumpOut()
+    local character = player.Character
+    if not character then return end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid and humanoid.SeatPart then
+        humanoid.Jump = true
+        task.wait(0.3)
+        humanoid.Sit = false
+    end
+end
+
+local function bringAllCarsAndCycleSit()
+    local character, rootPart = getCharacterAndRootPart()
+    local civCars = workspace:FindFirstChild("CivCars")
+    if not civCars then
+        Library:Notify({
+            Title = "Error",
+            Description = "CivCars folder not found!",
+            Time = 5
+        })
+        return
+    end
+
+    local emptyCars = {}
+
+    for _, car in ipairs(civCars:GetChildren()) do
+        if car:IsA("Model") and car:FindFirstChild("DriveSeat") then
+            local driveSeat = car:FindFirstChild("DriveSeat")
+            if driveSeat:IsA("VehicleSeat") and driveSeat.Occupant == nil then
+                table.insert(emptyCars, car)
+            end
+        end
+    end
+
+    if #emptyCars == 0 then
+        Library:Notify({
+            Title = "No Cars Found",
+            Description = "No empty cars available!",
+            Time = 5
+        })
+        return
+    end
+
+    for _, car in ipairs(emptyCars) do
+        if not car.PrimaryPart then
+            car.PrimaryPart = car:FindFirstChild("PrimaryPart") or car:FindFirstChildWhichIsA("BasePart")
+            if not car.PrimaryPart then
+                warn("Car has no PrimaryPart!")
+                continue
+            end
+        end
+
+        local carSize = car:GetExtentsSize()
+        local targetPos = rootPart.Position + Vector3.new(0, carSize.Y/2 + 0.1, 0)
+        local targetCFrame = CFrame.new(targetPos, targetPos + rootPart.CFrame.LookVector)
+
+        car:PivotTo(targetCFrame)
+
+        for _, part in ipairs(car:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Anchored = true
+            end
+        end
+        task.wait(0.1)
+        for _, part in ipairs(car:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Anchored = false
+            end
+        end
+
+        local posValue = car:FindFirstChild("Position") or car:FindFirstChild("LastLocation") or car:FindFirstChild("SpawnPoint")
+        if posValue and posValue:IsA("Vector3Value") then
+            posValue.Value = targetPos
+        end
+
+        local driveSeat = car:FindFirstChild("DriveSeat")
+        if driveSeat and driveSeat:IsA("VehicleSeat") then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                task.wait(0.1)
+                driveSeat:Sit(humanoid)
+            end
+        end
+
+        task.wait(1.5)
+
+        forceJumpOut()
+
+        task.wait(0.5)
+    end
+
+    Library:Notify({
+        Title = "Success",
+        Description = "Stole all empty cars.",
+        Time = 5
+    })
+end
+
+Tab3:AddButton({
+    Text = "Steal All Cars",
+    Func = function()
+        bringAllCarsAndCycleSit()
+    end,
+    DoubleClick = false
+})
+
+ 
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function getCharacterAndRootPart()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+    return character, rootPart
+end
+
+local function bringClosestEmptyCarToPlayer()
+    local character, rootPart = getCharacterAndRootPart()
+    local civCars = workspace:FindFirstChild("CivCars")
+    if not civCars then
+        Library:Notify({
+            Title = "Error",
+            Description = "CivCars folder not found!",
+            Time = 5
+        })
+        return
+    end
+
+    local closestCar = nil
+    local shortestDistance = math.huge
+    local playerPosition = rootPart.Position
+
+    for _, car in ipairs(civCars:GetChildren()) do
+        if car:IsA("Model") and car:FindFirstChild("DriveSeat") then
+            local driveSeat = car:FindFirstChild("DriveSeat")
+            if driveSeat:IsA("VehicleSeat") and driveSeat.Occupant == nil then
+                local distance = (driveSeat.Position - playerPosition).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestCar = car
+                end
+            end
+        end
+    end
+
+    if not closestCar then
+        Library:Notify({
+            Title = "No Car Found",
+            Description = "Could not find any empty car nearby!",
+            Time = 5
+        })
+        return
+    end
+
+    if not closestCar.PrimaryPart then
+        closestCar.PrimaryPart = closestCar:FindFirstChild("PrimaryPart") or closestCar:FindFirstChildWhichIsA("BasePart")
+        if not closestCar.PrimaryPart then
+            warn("Car has no PrimaryPart!")
+            return
+        end
+    end
+
+    local rayOrigin = rootPart.Position + Vector3.new(0, 5, 0)
+    local rayDirection = Vector3.new(0, -50, 0)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {character, closestCar}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+    local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+    local groundY = rootPart.Position.Y
+    if rayResult then
+        groundY = rayResult.Position.Y
+    end
+
+    local carSize = closestCar:GetExtentsSize()
+    local forward = rootPart.CFrame.LookVector
+    local targetPos = rootPart.Position + forward * (carSize.Z / 2 + 3)
+    targetPos = Vector3.new(targetPos.X, groundY + carSize.Y / 2 + 0.1, targetPos.Z)
+
+    local targetCFrame = CFrame.new(targetPos, targetPos + forward)
+    closestCar:PivotTo(targetCFrame)
+
+    for _, part in ipairs(closestCar:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Anchored = true
+        end
+    end
+
+    task.wait(0.2)
+
+    for _, part in ipairs(closestCar:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Anchored = false
+        end
+    end
+
+    local posValue = closestCar:FindFirstChild("Position") or closestCar:FindFirstChild("LastLocation") or closestCar:FindFirstChild("SpawnPoint")
+    if posValue and posValue:IsA("Vector3Value") then
+        posValue.Value = targetPos
+    end
+
+    task.wait(0.2)
+
+    local driveSeat = closestCar:FindFirstChild("DriveSeat")
+    if driveSeat and driveSeat:IsA("VehicleSeat") then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            task.wait(0.1)
+            driveSeat:Sit(humanoid)
+        end
+    end
+
+    Library:Notify({
+        Title = "Success",
+        Description = "Nearest car brought to you!",
+        Time = 5
+    })
+end
+
+player.CharacterAdded:Connect(function()
+    getCharacterAndRootPart()
+end)
+
+Tab3:AddButton({
+    Text = "Steal Closest Car",
+    Func = function()
+        bringClosestEmptyCarToPlayer()
+    end,
+    DoubleClick = false
+})
+
+ 
+local RepostOwnEnabled = false
+local LikeOwnEnabled = false
+
+local player = game:GetService("Players").LocalPlayer
+local event = game:GetService("ReplicatedStorage"):WaitForChild("Resources"):WaitForChild("#Phone"):WaitForChild("Main")
+
+ Tab3:AddToggle("RepostOwn", {
+    Text = "[TWITTER] Repost Own",
+    Default = false,
+    Callback = function(state)
+        RepostOwnEnabled = state
+
+        Library:Notify({
+            Title = "Repost Own",
+            Description = state and "Auto-reposting enabled." or "Auto-reposting disabled.",
+            Time = 5
+        })
+
+        if state then
+            task.spawn(function()
+                while RepostOwnEnabled do
+                    local tweets = player.PlayerGui.Phone.Frame.Phone.Main.Twitter.ScrollingFrame:GetChildren()
+                    local newestTweet, newestNum = nil, 0
+
+                    for _, frame in ipairs(tweets) do
+                        local num = tonumber(frame.Name)
+                        if frame:FindFirstChild("UserName") and frame.UserName.Text == player.Name and num and num > newestNum then
+                            newestNum = num
+                            newestTweet = frame
+                        end
+                    end
+
+                    if newestTweet then
+                        local args = {
+                            "Tweet",
+                            {"Repost", true, tostring(newestTweet.Name)}
+                        }
+                        for i = 1, 5 do
+                            task.spawn(function()
+                                event:FireServer(unpack(args))
+                            end)
+                        end
+                    end
+
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+ Tab3:AddToggle("LikeOwn", {
+    Text = "[TWITTER] Like Own",
+    Default = false,
+    Callback = function(state)
+        LikeOwnEnabled = state
+
+        Library:Notify({
+            Title = "Like Own",
+            Description = state and "Auto-liking enabled." or "Auto-liking disabled.",
+            Time = 5
+        })
+
+        if state then
+            task.spawn(function()
+                while LikeOwnEnabled do
+                    local tweets = player.PlayerGui.Phone.Frame.Phone.Main.Twitter.ScrollingFrame:GetChildren()
+                    local newestTweet, newestNum = nil, 0
+
+                    for _, frame in ipairs(tweets) do
+                        local num = tonumber(frame.Name)
+                        if frame:FindFirstChild("UserName") and frame.UserName.Text == player.Name and num and num > newestNum then
+                            newestNum = num
+                            newestTweet = frame
+                        end
+                    end
+
+                    if newestTweet then
+                        local args = {
+                            "Tweet",
+                            {"Liked", true, tostring(newestTweet.Name)}
+                        }
+                        for i = 1, 5 do
+                            task.spawn(function()
+                                event:FireServer(unpack(args))
+                            end)
+                        end
+                    end
+
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+local CallPoliceSpamEnabled = false
+
+Tab3:AddToggle("CallPoliceSpam", {
+    Text = "Annoy/Spam Call Police",
+    Default = false,
+    Callback = function(state)
+        CallPoliceSpamEnabled = state
+
+        Library:Notify({
+            Title = "Spam Police",
+            Description = state and "Spamming CallPolice started." or "Spamming CallPolice stopped.",
+            Time = 5
+        })
+
+        if state then
+            task.spawn(function()
+                while CallPoliceSpamEnabled do
+                    game:GetService("ReplicatedStorage"):WaitForChild("CallPolice"):FireServer()
+                    task.wait(0.05) -- Adjust delay if needed
+                end
+            end)
+        end
+    end
+})
+
+ 
+local player = game:GetService("Players").LocalPlayer
+
+local function getEquippedGunSetting()
+    local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+    if tool and tool:FindFirstChild("Setting") then
+        return require(tool.Setting)
+    else
+        warn("No gun equipped or Setting not found.")
+        return nil
+    end
+end
+
+ 
+Tab4:AddButton({
+    Text = "Remove Gun Recoil",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.Recoil = 0 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "0 Fire Rate",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.FireRate = 0 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Enable Full Auto",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.Auto = true end
+    end
+})
+
+Tab4:AddButton({
+    Text = "infinite Ammo",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then
+            settings.Ammo = 99999
+            settings.AmmoPerMag = 99999
+            settings.LimitedAmmoEnabled = false
+            print("Infinite ammo enabled!")
+        end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Anti Jam",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.JamChance = 0 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Instant Reload",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.ReloadTime = 0 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Max Accuracy",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.Accuracy = 1 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Enable Onetap",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.BaseDamage = 10000 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Enable Lifesteal",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.Lifesteal = 100 end
+    end
+})
+
+Tab4:AddButton({
+    Text = "Disable Recoil",
+    Func = function()
+        local settings = getEquippedGunSetting()
+        if settings then settings.CameraRecoilingEnabled = false end
+    end
+})
+
+
+ 
+local LeftGroupbox = TargetTab:AddLeftGroupbox("Target", "crosshair")
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+ task.spawn(function()
+    while task.wait() do
+        if getgenv().SwimMethod then
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+            end
+        end
+    end
+end)
+
+getgenv().SwimMethod = false
+
+local selectedTargetName = ""
+local spectateTarget = nil
+local killBringTarget = nil
+local spectateConnection = nil
+local killBringConnection = nil
+
+local function findPlayerByName(name)
+    name = name:lower()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr.Name:lower():find(name) or (plr.DisplayName and plr.DisplayName:lower():find(name)) then
+            return plr
+        end
+    end
+    return nil
+end
+
+ local PlayerInput = LeftGroupbox:AddInput("PlayerInput", {
+    Text = "Player Name",
+    Default = "",
+    Numeric = false,
+    Finished = true,
+    Placeholder = "Enter player username",
+    Callback = function(value)
+        selectedTargetName = value:lower():gsub("%s+", "")
+        local plr = findPlayerByName(value)
+        if plr then
+            spectateTarget = plr
+            killBringTarget = plr
+        else
+            spectateTarget = nil
+            killBringTarget = nil
+        end
+    end
+})
+
+ local SpectateToggle = LeftGroupbox:AddToggle("SpectateToggle", {
+    Text = "Spectate Player",
+    Default = false,
+    Tooltip = "Toggle spectate on/off",
+    Callback = function(state)
+        if state then
+            if not spectateTarget or not spectateTarget.Character or not spectateTarget.Character:FindFirstChild("HumanoidRootPart") then
+                warn("No valid player to spectate")
+                return
+            end
+            spectateConnection = RunService.RenderStepped:Connect(function()
+                if spectateTarget and spectateTarget.Character and spectateTarget.Character:FindFirstChild("HumanoidRootPart") then
+                    camera.CameraType = Enum.CameraType.Scriptable
+                    camera.CFrame = spectateTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 10)
+                end
+            end)
+        else
+            if spectateConnection then
+                spectateConnection:Disconnect()
+                spectateConnection = nil
+            end
+            camera.CameraType = Enum.CameraType.Custom
+            camera.CameraSubject = player.Character and player.Character:FindFirstChild("Humanoid") or nil
+        end
+    end
+})
+
+ local KillBringToggle = LeftGroupbox:AddToggle("KillBringToggle", {
+    Text = "Kill Bring",
+    Default = false,
+    Tooltip = "Auto bring the target in front of you",
+    Callback = function(state)
+        if state then
+            if not killBringTarget or not killBringTarget.Character or not killBringTarget.Character:FindFirstChild("HumanoidRootPart") then
+                warn("No valid player to kill bring")
+                return
+            end
+            killBringConnection = RunService.Heartbeat:Connect(function()
+                if killBringTarget and killBringTarget.Character and killBringTarget.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local frontPos = player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2)
+                    killBringTarget.Character.HumanoidRootPart.CFrame = frontPos
+                end
+            end)
+        else
+            if killBringConnection then
+                killBringConnection:Disconnect()
+                killBringConnection = nil
+            end
+        end
+    end
+})
+
+ local function teleportToTarget(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        warn("Target is invalid or not found!")
+        return
+    end
+
+    local character = player.Character or player.CharacterAdded:Wait()
+    local root = character:FindFirstChild("HumanoidRootPart")
+
+    if not root then
+        warn("Could not find HumanoidRootPart!")
+        return
+    end
+
+     getgenv().SwimMethod = true
+    task.wait(1)  
+
+    root.CFrame = CFrame.new(targetPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 3, 0))
+
+    task.wait(0.5)
+    getgenv().SwimMethod = false
+
+    Library:Notify({
+        Title = "Teleported",
+        Description = "You have been teleported to " .. targetPlayer.Name,
+        Time = 3,
+        SoundId = 123456789 -- Replace with your actual sound ID
+    })
+end
+
+ local TeleportButton = LeftGroupbox:AddButton({
+    Text = "Teleport to Target",
+    Func = function()
+        local targetPlayer = killBringTarget or spectateTarget
+        if not targetPlayer then
+            warn("No target selected!")
+            return
+        end
+        teleportToTarget(targetPlayer)
+    end,
+    DoubleClick = false
+})
+
+LeftGroupbox:AddButton({
+    Text = "Car Kill (Stand Near Empty Car)",
+    Func = function()
+        if selectedTargetName == "" then
+            warn("No target selected!")
+            return
+        end
+
+        local targetPlayer = findPlayerByName(selectedTargetName)
+        if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            warn("Target not valid or not loaded")
+            return
+        end
+
+        local targetHRP = targetPlayer.Character.HumanoidRootPart
+        local civCars = workspace:FindFirstChild("CivCars")
+
+        if not civCars then
+            warn("CivCars folder not found!")
+            return
+        end
+
+        local closestCar = nil
+        local shortestDistance = math.huge
+        local playerHRP = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not playerHRP then return end
+
+        for _, car in ipairs(civCars:GetChildren()) do
+            local driveSeat = car:FindFirstChild("DriveSeat")
+            if driveSeat and driveSeat:IsA("VehicleSeat") and driveSeat.Occupant == nil then
+                local dist = (driveSeat.Position - playerHRP.Position).Magnitude
+                if dist < shortestDistance then
+                    shortestDistance = dist
+                    closestCar = car
+                end
+            end
+        end
+
+        if not closestCar then
+            warn("No empty car found!")
+            return
+        end
+
+        local partToAttach = closestCar.PrimaryPart or closestCar:FindFirstChild("DriveSeat")
+
+        local bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+        bv.P = 1e6
+        bv.Velocity = Vector3.zero
+        bv.Parent = partToAttach
+
+        local bav = Instance.new("BodyAngularVelocity")
+        bav.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+        bav.P = 1e6
+        bav.AngularVelocity = Vector3.zero
+        bav.Parent = partToAttach
+
+        if _G.CrazyCarLoop then _G.CrazyCarLoop:Disconnect() end
+
+        _G.CrazyCarLoop = RunService.Heartbeat:Connect(function()
+            if not closestCar or not closestCar.Parent or not targetHRP or not targetHRP.Parent then
+                _G.CrazyCarLoop:Disconnect()
+                bv:Destroy()
+                bav:Destroy()
+                return
+            end
+
+            local offset = Vector3.new(
+                math.random(-5, 5),
+                math.random(-3, 3),
+                math.random(-5, 5)
+            )
+
+            bv.Velocity = (targetHRP.Position + offset - closestCar:GetPivot().Position).Unit * 500
+
+            bav.AngularVelocity = Vector3.new(
+                math.random(-40, 40),
+                math.random(-40, 40),
+                math.random(-40, 40)
+            )
+        end)
+    end,
+    DoubleClick = false
+})
+
+LeftGroupbox:AddButton({
+    Text = "Check Target Inventory",
+    Func = function()
+        if selectedTargetName == "" then
+            warn("No target selected!")
+            return
+        end
+
+        local targetPlayer = findPlayerByName(selectedTargetName)
+        if not targetPlayer then
+            warn("Target not found!")
+            return
+        end
+
+        local inventoryFolder = targetPlayer:FindFirstChild("Backpack") or targetPlayer:FindFirstChild("StarterGear")
+        if not inventoryFolder then
+            warn("Inventory folder not found!")
+            return
+        end
+
+        local items = {}
+        for _, item in ipairs(inventoryFolder:GetChildren()) do
+            table.insert(items, item.Name)
+        end
+
+        local message = #items > 0 and table.concat(items, ", ") or "No items found"
+
+        Library:Notify({
+            Title = "Target Inventory",
+            Description = message,
+            Time = 4,
+            SoundId = 0
+        })
+    end,
+    DoubleClick = false
+})
+
+ 
+local LeftGroupbox = VisualTab:AddLeftGroupbox("Visual", "glasses")
+
+ local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+
+ local enabled = false
+local espColor = Color3.fromRGB(255, 0, 0) -- default RED
+
+ local espConnections, espVisuals = {}, {}
+
+ local Toggles = {}
+
+ local function isEnemy(player)
+        local character = player.Character
+        if not character then return false end
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not humanoid then return false end
+        return true  
+end
+
+local function createDrawing(type, props)
+        local drawing = Drawing.new(type)
+        for prop, val in pairs(props) do
+                drawing[prop] = val
+        end
+        return drawing
+end
+
+local function removeVisuals(tbl)
+        for _, visuals in pairs(tbl) do
+                for _, obj in pairs(visuals) do
+                        if typeof(obj) == "RBXScriptConnection" then
+                                obj:Disconnect()
+                        else
+                                obj:Remove()
+                        end
+                end
+        end
+end
+
+local function updateESP(player)
+        if player == Players.LocalPlayer then return end
+
+        local visuals = {
+                box = createDrawing("Square", {Thickness = 1, Color = espColor, Filled = false, Visible = false}),
+                outline = createDrawing("Square", {Thickness = 2, Color = Color3.new(0, 0, 0), Filled = false, Visible = false}),
+                healthOutline = createDrawing("Square", {Filled = true, Color = Color3.new(0, 0, 0), Visible = false}),
+                health = createDrawing("Square", {Filled = true, Color = espColor, Visible = false}),
+                name = createDrawing("Text", {Text = player.Name, Size = 16, Center = true, Outline = true, Visible = false}),
+                snapline = createDrawing("Line", {Color = espColor, Thickness = 1, Visible = false}),
+                mouseline = createDrawing("Line", {Color = espColor, Thickness = 1, Visible = false}),
+                skeleton = {}
+        }
+
+        local conn = RunService.RenderStepped:Connect(function()
+                if not enabled or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+                        for _, obj in pairs(visuals) do
+                                if typeof(obj) == "table" then
+                                        for _, l in pairs(obj) do l.Visible = false end
+                                else
+                                        obj.Visible = false
+                                end
+                        end
+                        return
+                end
+
+                local character = player.Character
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+                local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+
+                if not onScreen then
+                        for _, obj in pairs(visuals) do
+                                if typeof(obj) == "table" then
+                                        for _, l in pairs(obj) do l.Visible = false end
+                                else
+                                        obj.Visible = false
+                                end
+                        end
+                        return
+                end
+
+                local distance = (Camera.CFrame.Position - hrp.Position).Magnitude
+                local size = math.clamp(1000 / distance * 1.7, 0, 220)
+                local boxSize = Vector2.new(size, size * 1.5)
+                local boxPos = Vector2.new(pos.X - boxSize.X / 2, pos.Y - boxSize.Y / 2)
+
+                visuals.outline.Size = boxSize + Vector2.new(2, 2)
+                visuals.outline.Position = boxPos - Vector2.new(1, 1)
+                visuals.outline.Visible = Toggles.BoxESP and Toggles.BoxESP.Value
+
+                visuals.box.Size = boxSize
+                visuals.box.Position = boxPos
+                visuals.box.Color = espColor
+                visuals.box.Filled = Toggles.FilledESP and Toggles.FilledESP.Value
+                visuals.box.Visible = Toggles.BoxESP and Toggles.BoxESP.Value
+
+                local healthPct = humanoid and humanoid.Health / humanoid.MaxHealth or 0
+                visuals.healthOutline.Size = Vector2.new(6, boxSize.Y + 2)
+                visuals.healthOutline.Position = boxPos - Vector2.new(7, 1)
+                visuals.healthOutline.Visible = Toggles.HealthBarESP and Toggles.HealthBarESP.Value
+
+                visuals.health.Size = Vector2.new(4, boxSize.Y * healthPct)
+                visuals.health.Position = boxPos - Vector2.new(6, -boxSize.Y * (1 - healthPct))
+                visuals.health.Color = espColor
+                visuals.health.Visible = Toggles.HealthBarESP and Toggles.HealthBarESP.Value
+
+                visuals.name.Position = Vector2.new(pos.X, boxPos.Y - 15)
+                visuals.name.Color = espColor
+                visuals.name.Visible = Toggles.NameESP and Toggles.NameESP.Value
+
+                local mousePos = UserInputService:GetMouseLocation()
+
+                visuals.snapline.Visible = Toggles.SnapLine and Toggles.SnapLine.Value
+                if visuals.snapline.Visible then
+                        visuals.snapline.From = mousePos
+                        visuals.snapline.To = Vector2.new(pos.X, pos.Y)
+                        visuals.snapline.Color = espColor
+                end
+
+                visuals.mouseline.Visible = Toggles.LineToAll and Toggles.LineToAll.Value
+                if visuals.mouseline.Visible then
+                        visuals.mouseline.From = mousePos
+                        visuals.mouseline.To = Vector2.new(pos.X, pos.Y)
+                        visuals.mouseline.Color = espColor
+                end
+
+                if Toggles.SkeletonESP and Toggles.SkeletonESP.Value then
+                        local function drawBone(from, to, key)
+                                local p1 = character:FindFirstChild(from)
+                                local p2 = character:FindFirstChild(to)
+
+                                if p1 and p2 then
+                                        local v1, onScreen1 = Camera:WorldToViewportPoint(p1.Position)
+                                        local v2, onScreen2 = Camera:WorldToViewportPoint(p2.Position)
+
+                                        if onScreen1 and onScreen2 then
+                                                local line = visuals.skeleton[key]
+                                                if not line then
+                                                        line = createDrawing("Line", {Thickness = 1, Color = espColor, Visible = true})
+                                                        visuals.skeleton[key] = line
+                                                end
+                                                line.From = Vector2.new(v1.X, v1.Y)
+                                                line.To = Vector2.new(v2.X, v2.Y)
+                                                line.Color = espColor
+                                                line.Visible = true
+                                                return
+                                        end
+                                end
+
+                                if visuals.skeleton[key] then
+                                        visuals.skeleton[key].Visible = false
+                                end
+                        end
+
+                        drawBone("Head", "UpperTorso", "head_to_chest")
+                        drawBone("UpperTorso", "LowerTorso", "chest_to_hip")
+                        drawBone("UpperTorso", "LeftUpperArm", "left_shoulder")
+                        drawBone("LeftUpperArm", "LeftLowerArm", "left_elbow")
+                        drawBone("LeftLowerArm", "LeftHand", "left_hand")
+                        drawBone("UpperTorso", "RightUpperArm", "right_shoulder")
+                        drawBone("RightUpperArm", "RightLowerArm", "right_elbow")
+                        drawBone("RightLowerArm", "RightHand", "right_hand")
+                        drawBone("LowerTorso", "LeftUpperLeg", "left_hip")
+                        drawBone("LeftUpperLeg", "LeftLowerLeg", "left_knee")
+                        drawBone("LeftLowerLeg", "LeftFoot", "left_foot")
+                        drawBone("LowerTorso", "RightUpperLeg", "right_hip")
+                        drawBone("RightUpperLeg", "RightLowerLeg", "right_knee")
+                        drawBone("RightLowerLeg", "RightFoot", "right_foot")
+                else
+                        for _, l in pairs(visuals.skeleton) do l.Visible = false end
+                end
+        end)
+
+        espConnections[player] = conn
+        espVisuals[player] = visuals
+end
+
+local function initESP()
+        for _, player in pairs(Players:GetPlayers()) do
+                updateESP(player)
+        end
+        Players.PlayerAdded:Connect(updateESP)
+end
+
+local function clearESP()
+        for _, conn in pairs(espConnections) do conn:Disconnect() end
+        espConnections = {}
+        removeVisuals(espVisuals)
+        espVisuals = {}
+end
+
+Toggles.EnableESP = LeftGroupbox:AddToggle("EnableESP", {
+                Text = "Enable ESP",
+                Default = false,
+                Callback = function(val)
+                        enabled = val
+                        if val then
+                                initESP()
+                        else
+                                clearESP()
+                        end
+                end
+        })
+
+ Toggles.BoxESP = LeftGroupbox:AddToggle("BoxESP", {Text = "Box ESP", Default = false})
+Toggles.FilledESP = LeftGroupbox:AddToggle("FilledESP", {Text = "Filled Box", Default = false})
+Toggles.HealthBarESP = LeftGroupbox:AddToggle("HealthBarESP", {Text = "Health Bar ESP", Default = false})
+Toggles.NameESP = LeftGroupbox:AddToggle("NameESP", {Text = "Name Tag ESP", Default = false})
+Toggles.SnapLine = LeftGroupbox:AddToggle("SnapLine", {Text = "Snap Line to Closest", Default = false})
+Toggles.LineToAll = LeftGroupbox:AddToggle("LineToAll", {Text = "Line to All", Default = false})
+Toggles.SkeletonESP = LeftGroupbox:AddToggle("SkeletonESP", {Text = "Skeleton ESP", Default = false})
+
+ local ColorPicker = Toggles.EnableESP:AddColorPicker("ESPColor", {
+        Default = espColor,
+        Title = "ESP Color",
+        Transparency = 0,
+        Callback = function(c)
+                espColor = c
+                for _, visuals in pairs(espVisuals) do
+                        if visuals.box then visuals.box.Color = espColor end
+                        if visuals.health then visuals.health.Color = espColor end
+                        if visuals.name then visuals.name.Color = espColor end
+                        if visuals.snapline then visuals.snapline.Color = espColor end
+                        if visuals.mouseline then visuals.mouseline.Color = espColor end
+                        for _, line in pairs(visuals.skeleton) do
+                                line.Color = espColor
+                        end
+                end
+        end
+})
+
+local RightGroupbox = VisualTab:AddRightGroupbox("Read Me", "information")
+
+local Label = RightGroupbox:AddLabel("Warning!")
+local WrappedLabel = RightGroupbox:AddLabel({
+    Text = "If you have esp enabled and you want to disable it, first disable all the options such as box, name or whatever u got on. Then after u done that then u can disable the ´Enable ESP´ Toggle.",
+    DoesWrap = true
+})
+
+ 
+local RightGroupbox = VisualTab:AddRightGroupbox("World", "information")
+
+-- 
+
+local Lighting = game:GetService("Lighting")
+
+ local isTimeOverride = false
+local customTime = 14  -- 2 PM
+
+ local TimeToggle = RightGroupbox:AddToggle("TimeToggle", {
+    Text = "Enable Time Changer",
+    Default = false,
+    Callback = function(state)
+        isTimeOverride = state
+        if state then
+            Lighting.ClockTime = customTime
+        end
+    end
+})
+
+ RightGroupbox:AddSlider("TimeSlider", {
+    Text = "Time of Day",
+    Min = 0,
+    Max = 24,
+    Default = customTime,
+    Float = 0.1,
+    Callback = function(val)
+        customTime = val
+        if isTimeOverride then
+            Lighting.ClockTime = customTime
+        end
+    end
+})
+
+
+-- 
+
+
+ local Lighting = game:GetService("Lighting")
+
+ local ambientStrength = 100
+local ambientColor = Color3.fromRGB(255, 0, 0)
+
+ local AmbientToggle = RightGroupbox:AddToggle("AmbientToggle", {
+    Text = "Ambient Lighting",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            Lighting.Ambient = ambientColor:lerp(Color3.new(0, 0, 0), 1 - (ambientStrength / 100))
+        else
+            Lighting.Ambient = Color3.new(0.5, 0.5, 0.5) -- Default ambient
+        end
+    end
+})
+
+ AmbientToggle:AddColorPicker("AmbientColor", {
+    Default = ambientColor,
+    Title = "Ambient Color",
+    Transparency = 0,
+    Callback = function(newColor)
+        ambientColor = newColor
+        if AmbientToggle.Value then
+            Lighting.Ambient = ambientColor:lerp(Color3.new(0, 0, 0), 1 - (ambientStrength / 100))
+        end
+    end
+})
+
+ RightGroupbox:AddSlider("AmbientStrength", {
+    Text = "Ambient Strength",
+    Min = 0,
+    Max = 100,
+    Default = 100,
+    Rounding = 0,
+    Callback = function(val)
+        ambientStrength = val
+        if AmbientToggle.Value then
+            Lighting.Ambient = ambientColor:lerp(Color3.new(0, 0, 0), 1 - (ambientStrength / 100))
+        end
+    end
+})
+
+
+local LeftGroupbox = OtherTab:AddLeftGroupbox("Vulnerabilities", "information")
+
+local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+local Players = cloneref(game:GetService("Players"))
+
+local function getPing()
+    local Player = Players.LocalPlayer
+    if typeof(Player.GetNetworkPing) == "function" then
+        local success, result = pcall(function()
+            return tonumber(string.match(Player:GetNetworkPing(), "%d+"))
+        end)
+        if success and result then return result end
+    end
+    local success2, pingStat = pcall(function()
+        return Player:FindFirstChild("PlayerGui"):FindFirstChild("Ping") or
+               Player:FindFirstChild("PlayerScripts"):FindFirstChild("Ping")
+    end)
+    if success2 and pingStat and pingStat:IsA("TextLabel") then
+        local num = tonumber(string.match(pingStat.Text, "%d+"))
+        if num then return num end
+    end
+    local t0 = tick()
+    local temp = Instance.new("BoolValue", ReplicatedStorage)
+    temp.Name = "PingTest_" .. tostring(math.random(10000, 99999))
+    task.wait(0.1)
+    local t1 = tick()
+    temp:Destroy()
+    return math.clamp((t1 - t0) * 1000, 50, 300)
+end
+
+local function duplicateGun()
+    local Player = Players.LocalPlayer
+    local Character = Player.Character or Player.CharacterAdded:Wait()
+    local Backpack = Player:WaitForChild("Backpack")
+    local Tool = Character:FindFirstChildOfClass("Tool")
+    if not Tool then return end
+    Tool.Parent = Backpack
+    task.wait(0.5)
+    local ToolName = Tool.Name
+    local ToolId = nil
+    local ping = getPing()
+    local delay = 0.25 + ((math.clamp(ping, 0, 300) / 300) * 0.03)
+    local marketconnection = ReplicatedStorage.MarketItems.ChildAdded:Connect(function(item)
+        if item.Name == ToolName then
+            local owner = item:WaitForChild("owner", 2)
+            if owner and owner.Value == Player.Name then
+                ToolId = item:GetAttribute("SpecialId")
+            end
+        end
+    end)
+    task.spawn(function()
+        ReplicatedStorage.ListWeaponRemote:FireServer(ToolName, 99999)
+    end)
+    task.wait(delay)
+    task.spawn(function()
+        ReplicatedStorage.BackpackRemote:InvokeServer("Store", ToolName)
+    end)
+    task.wait(3)
+    if ToolId then
+        task.spawn(function()
+            ReplicatedStorage.BuyItemRemote:FireServer(ToolName, "Remove", ToolId)
+        end)
+    end
+    task.spawn(function()
+        ReplicatedStorage.BackpackRemote:InvokeServer("Grab", ToolName)
+    end)
+    marketconnection:Disconnect()
+    task.wait(1)
+end
+
+LeftGroupbox:AddButton({
+    Text = "Dupe Gun",
+    Func = function()
+        duplicateGun()
+        Library:Notify("64thlol dupe complete", 5)
+    end,
+    DoubleClick = false
+})
+
+
+
+--END STUFF KEEP AT END
+Library:SetFont(Enum.Font.Gotham)
+
+Library.ShowCustomCursor = false
+
+--NOTFICATIONS DOWN HERE
+--NOTFICATIONS DOWN HERE
+--NOTFICATIONS DOWN HERE
+Library:Notify("Thanks for using 64th.lol", 5) -- Second param is duration in seconds
+
+Library:Notify({
+    Title = "Success",
+    Description = "Loaded 64th.lol successfully",
+    Time = 5,
+    SoundId = 3320590485 
+})
+
+local Notification = Library:Notify({
+    Title = "Status: 🟢",
+    Description = "Safe To use and bypassed...",
+    Time = 10
+})
+
+local StepNotification = Library:Notify({
+    Title = "Made by tripzzfrm",
+    Description = "discord.gg/64thlol",
+    Steps = 5, 
+    Time = someInstanceThatFires 
+})
+
+StepNotification:ChangeStep(2)
+
+
+-- =========================
+-- Halloween Theme Patch
+-- Appended by ChatGPT — cosmetic only (UI/strings/notifications)
+-- Does NOT alter core gameplay logic or remote calls.
+-- Paste location: appended to end of script.
+-- =========================
+
+local function safe_pcall(fn, ...)
+    local ok, err = pcall(fn, ...)
+    if not ok then
+        warn("[HalloweenPatch] error: " .. tostring(err))
+    end
+end
+
+-- Helper: spooky prefix
+local function spooky(txt)
+    return "🎃 " .. (txt or "")
+end
+
+-- Wrap Library.Notify to add spooky prefixes (if Library exists)
+safe_pcall(function()
+    if Library and type(Library.Notify) == "function" then
+        local _origNotify = Library.Notify
+        function Library:Notify(opts)
+            opts = opts or {}
+            -- prefix title and description
+            if opts.Title then
+                opts.Title = spooky(opts.Title)
+            else
+                opts.Title = spooky("Spooky")
+            end
+            if opts.Description then
+                opts.Description = "👻 " .. opts.Description
+            end
+            return _origNotify(self, opts)
+        end
+    end
+end)
+
+-- Replace blackout overlay functions with Halloween-styled versions
+safe_pcall(function()
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+
+    -- override showBlackScreen
+    showBlackScreen = function()
+        local player = game:GetService("Players").LocalPlayer
+        if not player then return end
+        local existing = player:FindFirstChildWhichIsA("PlayerGui") and player.PlayerGui:FindFirstChild("BlackoutOverlay")
+        if existing then existing:Destroy() end
+
+        local gui = Instance.new("ScreenGui")
+        gui.Name = "BlackoutOverlay"
+        gui.IgnoreGuiInset = true
+        gui.ResetOnSpawn = false
+        gui.Parent = player:WaitForChild("PlayerGui")
+
+        local black = Instance.new("Frame")
+        black.Size = UDim2.new(1, 0, 1, 0)
+        black.Position = UDim2.new(0, 0, 0, 0)
+        black.BackgroundColor3 = Color3.fromRGB(12,12,12)
+        black.BorderSizePixel = 0
+        black.ZIndex = 999
+        black.Parent = gui
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 0, 220)
+        label.Position = UDim2.new(0, 0, 0.5, -110)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(255, 140, 0)
+        label.TextScaled = true
+        label.Font = Enum.Font.GothamBlack
+        label.Text = "🎃 🎃 64th.lol — Teleporting!\nTrick or Treat!\nDiscord: discord.gg/64thlol"
+        label.TextStrokeTransparency = 0.3
+        label.TextStrokeColor3 = Color3.new(0,0,0)
+        label.TextYAlignment = Enum.TextYAlignment.Center
+        label.ZIndex = 1000
+        label.Parent = gui
+
+        -- add a subtle pulsing pumpkin icon (TextLabel)
+        local pumpkin = Instance.new("TextLabel")
+        pumpkin.Size = UDim2.new(0, 120, 0, 120)
+        pumpkin.Position = UDim2.new(0.5, -60, 0.3, -60)
+        pumpkin.BackgroundTransparency = 1
+        pumpkin.Text = "🎃"
+        pumpkin.Font = Enum.Font.GothamBlack
+        pumpkin.TextScaled = true
+        pumpkin.TextStrokeTransparency = 0.5
+        pumpkin.TextColor3 = Color3.fromRGB(255,165,0)
+        pumpkin.ZIndex = 1001
+        pumpkin.Parent = gui
+
+        -- simple coroutine to pulse the pumpkin's TextTransparency (non-blocking)
+        task.spawn(function()
+            local dir = 1
+            local t = 0
+            while gui.Parent do
+                t = t + 0.03 * dir
+                if t >= 1 then dir = -1 end
+                if t <= 0 then dir = 1 end
+                pumpkin.TextTransparency = 0.3 + 0.7 * t
+                task.wait(0.05)
+            end
+        end)
+    end
+
+    -- override removeBlackScreen
+    removeBlackScreen = function()
+        local player = game:GetService("Players").LocalPlayer
+        if not player then return end
+        local gui = player.PlayerGui and player.PlayerGui:FindFirstChild("BlackoutOverlay")
+        if gui then gui:Destroy() end
+    end
+end)
+
+-- Cosmetic: rename some teleport location labels (if locations table exists)
+safe_pcall(function()
+    if locations and type(locations) == "table" then
+        local spooky_map = {
+            ["Deli Market 🥪"] = "Deli of Dread 🥪",
+            ["Capital One Bank 🏦"] = "Crypt Bank 🏦",
+            ["Ice Box 🧊"] = "Frosted Tomb 🧊",
+            ["Domino's 🍕"] = "Domino's of Doom 🍕",
+            ["Hotel 🏨"] = "Haunted Hotel 🏨",
+            ["Gun Shop 🔫"] = "Graveyard Armory 🔫",
+            ["Car Dealer 🚗"] = "Creeper Car Lot 🚗",
+            ["Laundromat 💷"] = "Laundromat of Laments 💷",
+            ["Studio 🎙"] = "Spooky Studio 🎙",
+            ["Basketball Court 🏀"] = "Basketball of the Damned 🏀",
+            ["Hospital 🏥"] = "Hallowed Hospital 🏥",
+            ["Mansion 🏚️"] = "Mansion of Misery 🏚️",
+            ["New Penthouse 🏙️"] = "Nightmare Penthouse 🏙️"
+        }
+
+        -- iterate and replace any LeftGroupbox teleport buttons if they exist
+        -- we will attempt to find any UI lists/tables that reference locations and rename keys safely
+        for oldName, newName in pairs(spooky_map) do
+            if locations[oldName] then
+                locations[newName] = locations[oldName]
+                locations[oldName] = nil
+            end
+        end
+    end
+end)
+
+-- Cosmetic: change some static Welcome texts if LeftGroupbox labels exist
+safe_pcall(function()
+    -- attempt to find and modify some Label variables commonly created earlier
+    if LeftGroupbox and type(LeftGroupbox.AddLabel) == "function" then
+        -- Add a Halloween welcome label (safe add)
+        pcall(function()
+            LeftGroupbox:AddLabel("Welcome to Halloween Havoc! 🎃")
+        end)
+    end
+end)
+
+-- Cosmetic: change some button text where quick to detect (best-effort, non-invasive)
+safe_pcall(function()
+    -- search workspace, StarterGui, or Library UI for TextLabels/TextButtons and update a few known strings
+    local function tryReplaceGuiStrings(root)
+        if not root then return end
+        for _, inst in ipairs(root:GetDescendants()) do
+            if inst:IsA("TextLabel") or inst:IsA("TextButton") or inst:IsA("TextBox") then
+                local txt = inst.Text
+                if type(txt) == "string" then
+                    -- replace a few common words
+                    txt = txt:gsub("Welcome @", "Welcome, mortal @")
+                    txt = txt:gsub("Welcome", "Welcome (to Halloween)")
+                    txt = txt:gsub("Infinite", "Eternal")
+                    txt = txt:gsub("Auto", "Ghoul-Auto")
+                    txt = txt:gsub("Money", "Candy")
+                    inst.Text = txt
+                end
+            end
+        end
+    end
+
+    pcall(function() tryReplaceGuiStrings(game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")) end)
+    pcall(function() tryReplaceGuiStrings(game:GetService("StarterGui")) end)
+end)
+
+-- End of Halloween Patch
