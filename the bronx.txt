@@ -1,3 +1,43 @@
+-- Floating Discord Billboard above player
+task.spawn(function()
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+
+    local function createBillboard(character)
+        local hrp = character:WaitForChild("HumanoidRootPart", 10)
+        if not hrp then return end
+
+        if hrp:FindFirstChild("DiscordBillboard") then
+            hrp.DiscordBillboard:Destroy()
+        end
+
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "DiscordBillboard"
+        billboard.Size = UDim2.new(0, 200, 0, 30)
+        billboard.StudsOffset = Vector3.new(0, 3, 0)
+        billboard.AlwaysOnTop = false
+        billboard.Adornee = hrp
+        billboard.Parent = hrp
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.Text = "discord.gg/fTxqw8xqrV"
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextSize = 16
+        label.Font = Enum.Font.GothamBold
+        label.TextStrokeTransparency = 0.5
+        label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        label.Parent = billboard
+    end
+
+    if LocalPlayer.Character then
+        createBillboard(LocalPlayer.Character)
+    end
+
+    LocalPlayer.CharacterAdded:Connect(createBillboard)
+end)
+
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jaza141/WQAREGYTUIO0P/refs/heads/main/OBSIDIAN%20RED%20VER%20ITS%20LIKE%20NOT%20OBSIDIAN%20ANYMORE"))()
 local Window = Library:CreateWindow({
