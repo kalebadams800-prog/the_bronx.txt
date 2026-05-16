@@ -111,7 +111,7 @@ getgenv().wave_loaded = true
 local LoadingTick = os.clock()
 
 local gethui = gethui or function()
-    return game.CoreGui
+    return (game.Players.LocalPlayer and game.Players.LocalPlayer:FindFirstChild("PlayerGui")) or game.CoreGui
 end
 
 hookfunction(isfunctionhooked, function()
@@ -779,7 +779,8 @@ do -- FrameWork
             Config.TargetSelector.Targetting = Config.Silent.Enabled
         end
 
-        if not Config.TargetSelector.Targetting then
+        local TargettingEnabled = Config.TargetSelector.Targetting or Config.Silent.Enabled
+        if not TargettingEnabled then
             Target = nil
             return nil
         end
@@ -927,7 +928,7 @@ do -- FrameWork
             end 
         end 
 
-        if string.find(string.lower(Method), 'findpartonray') then
+        if string.find(string.lower(Method), 'findpartonray') or Method == "Raycast" then
             local cs = getcallingscript()
 
             if checkcaller() or string.find(cs.Name, "CameraModule") then
@@ -936,31 +937,41 @@ do -- FrameWork
 
             if Config.Silent.Enabled then
                 if not (math.random(0, 100) <= Config.Silent.HitChance) then
-                    return __namecall_hook(Self, ...)
+                    return __namecall_hook(Self, unpack(Arguments))
                 end
 
                 if Target and Target.Character then
                     local TargetPart = FindFirstChild(Target.Character, Config.Silent.HitParts[1] and Config.Silent.HitParts[math.random(1, #Config.Silent.HitParts)] or "Head")
                     if TargetPart then
-                        local Origin = Arguments[1].Origin;
-
-                        local Direction = (TargetPart.Position - Origin).Unit * 9e17;
-
-                        Arguments[1] = Ray.new(Origin, Direction)
+                        if string.find(string.lower(Method), 'findpartonray') then
+                            local Origin = Arguments[1].Origin;
+                            local Direction = (TargetPart.Position - Origin).Unit * 9e17;
+                            Arguments[1] = Ray.new(Origin, Direction)
+                        elseif Method == "Raycast" then
+                            local Origin = Arguments[1];
+                            local Direction = (TargetPart.Position - Origin).Unit * 9e17;
+                            Arguments[2] = Direction
+                        end
 
                         if Config.Silent.WallBang then
                             if Config.Tracers.Enabled then
                                 task.spawn(Config.Tracer, TargetPart.Position)
                             end
 
-                            return TargetPart, TargetPart.Position, Vector3.new(0,0,0)
+                            if string.find(string.lower(Method), 'findpartonray') then
+                                return TargetPart, TargetPart.Position, Vector3.new(0,0,0)
+                            end
                         end
                     end
                 end
             end
 
             if Config.Tracers.Enabled then
-                task.spawn(Config.Tracer, Arguments[1].Origin + Arguments[1].Direction)
+                if string.find(string.lower(Method), 'findpartonray') then
+                    task.spawn(Config.Tracer, Arguments[1].Origin + Arguments[1].Direction)
+                elseif Method == "Raycast" then
+                    task.spawn(Config.Tracer, Arguments[1] + Arguments[2])
+                end
             end
         end
 
@@ -3552,7 +3563,7 @@ do -- Library
     local IsMobile = UserInputService.TouchEnabled or false
 
     gethui = gethui or function()
-        return CoreGui
+        return (LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui")) or CoreGui
     end
 
     getgenv().Options = { }
@@ -4347,10 +4358,11 @@ do -- Library
     end
 
     Library.Holder = Instances:Create("ScreenGui", {
-        Parent = game:GetService("CoreGui"),
+        Parent = gethui(),
         Name = "\0",
         ZIndexBehavior = Enum.ZIndexBehavior.Global,
         DisplayOrder = 2,
+        IgnoreGuiInset = true,
         ResetOnSpawn = false
     })
 
@@ -5529,7 +5541,7 @@ do -- Library
             getgenv().Options[Dropdown.Flag] = Dropdown
 
             Library:Connect(UserInputService.InputBegan, function(Input)
-                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
                     if Library:IsMouseOverFrame(Items["OptionHolder"]) then
                         return
                     end
@@ -6669,7 +6681,7 @@ do -- Library
             end)
 
             Library:Connect(UserInputService.InputBegan, function(Input)
-                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
                     if not Colorpicker.IsOpen then
                         return
                     end
@@ -7579,7 +7591,7 @@ do -- Library
                     end
                 end
 
-                if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then 
                     if Library:IsMouseOverFrame(Items["KeybindWindow"]) or Library:IsMouseOverFrame(ModesDropdownItems["OptionHolder"]) then 
                         return
                     end
@@ -13115,10 +13127,17 @@ do
                             local _Clone = Lighting.Assets.GUI.ATMGui:Clone()
                             _Clone.Parent = LocalPlayer.PlayerGui
                             SelectedUI = _Clone
-                            _Clone.Frame.closeBtn.MouseButton1Click:Connect(function()
-                                ToggleInterface_Toggle:Set(false)
-                                --_Clone:Destroy()
-                            end)
+                            if _Clone.Frame.closeBtn.TouchTap then
+                                _Clone.Frame.closeBtn.TouchTap:Connect(function()
+                                    ToggleInterface_Toggle:Set(false)
+                                    --_Clone:Destroy()
+                                end)
+                            else
+                                _Clone.Frame.closeBtn.MouseButton1Click:Connect(function()
+                                    ToggleInterface_Toggle:Set(false)
+                                    --_Clone:Destroy()
+                                end)
+                            end
                         end
 
                         if not State and SelectedUI then
